@@ -29,7 +29,7 @@ if ( ! $icon = get_theme_mod( 'sc_icon' ) ) {
 					}
 
 					?>
-					<p>© Copyright StudyChurch 2015, All Rights Reserved.<br /><a href="https://studychur.ch/">StudyChurch</a> is a product of <a href="http://tannermoushey.com">iWitness Design</a>.</p>
+					<p>© Copyright StudyChurch <?php echo date( 'Y' ); ?>, All Rights Reserved.<br /><a href="https://studychur.ch/">StudyChurch</a> is a product of <a href="https://iwitnessdesign.com">iWitness Design</a>.</p>
 				</div>
 				<div class="medium-6 columns">
 					<a href="<?php home_url(); ?>" class="right"><img src="<?php echo esc_url( $icon ); ?>" width="61" height="61" /></a>

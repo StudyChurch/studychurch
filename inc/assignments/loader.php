@@ -19,10 +19,10 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 				'slug' => 'assignments',
 				'name' => 'Assignments',
 				'nav_item_position' => 105,
-				'screens' => array(
-					'edit' => false,
-					'create' => false,
-				),
+//				'screens' => array(
+//					'edit' => false,
+//					'create' => false,
+//				),
 			) );
 
 		}
