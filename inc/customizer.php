@@ -70,6 +70,17 @@ class SC_Customizer {
 			'settings' => 'primary_color'
 		) ) );
 
+		$wp_customize->add_setting( 'link_color', array(
+			'default'   => '#3ebeb2',
+			'transport' => 'refresh',
+		) );
+
+		$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'link_color', array(
+			'label'    => __( 'Link Color', 'sc' ),
+			'section'  => 'colors',
+			'settings' => 'link_color'
+		) ) );
+
 		$wp_customize->add_setting( 'success_color', array(
 			'default'   => '#3ebeb2',
 			'transport' => 'refresh',
