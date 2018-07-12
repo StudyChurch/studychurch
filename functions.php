@@ -505,6 +505,7 @@ class SC_Setup {
 
 	public function branding_styles() {
 		$primary_color = get_theme_mod( 'primary_color' );
+		$link_color    = get_theme_mod( 'link_color' );
 		$success_color = get_theme_mod( 'success_color' );
 		$warning_color = get_theme_mod( 'warning_color' );
 		$error_color   = get_theme_mod( 'error_color'   );
@@ -535,7 +536,7 @@ class SC_Setup {
 
 			body.branded a,
 			body.branded .side-nav li a:not(.button) {
-				color: <?php echo $primary_color; ?>
+				color: <?php echo $link_color; ?>
 			}
 
 			body.branded a:hover {
@@ -545,7 +546,7 @@ class SC_Setup {
 			body.branded button,
 			body.branded .button {
 				color: white;
-				background-color: <?php echo $primary_color; ?>;
+				background-color: <?php echo $link_color; ?>;
 			}
 
 			body.branded #buddypress div.item-list-tabs#subnav {
