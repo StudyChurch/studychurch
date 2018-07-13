@@ -13,7 +13,7 @@
  */
 
 // Useful global constants
-define( 'SC_VERSION', '0.1.5' );
+define( 'SC_VERSION', '0.1.5.1' );
 define( 'BP_DEFAULT_COMPONENT', 'profile' );
 
 SC_Setup::get_instance();
@@ -256,7 +256,7 @@ class SC_Setup {
 	protected function enqueue_styles() {
 		$postfix = ( defined( 'SCRIPT_DEBUG' ) && true === SCRIPT_DEBUG ) ? '' : '.min';
 
-		wp_enqueue_style( 'sc', get_template_directory_uri() . "/assets/css/studychurch-new.css", array(), SC_VERSION );
+		wp_enqueue_style( 'sc', get_template_directory_uri() . "/dist/main.css", array(), SC_VERSION );
 //		wp_enqueue_style( 'open-sans', 'https://fonts.googleapis.com/css?family=Open+Sans:300italic,600italic,300,600' );
 //		wp_enqueue_style( 'railway', 'https://fonts.googleapis.com/css?family=Raleway' );
 	}
@@ -527,6 +527,7 @@ class SC_Setup {
 			body.branded .contain-to-grid .top-bar,
 			body.branded .top-bar-section > ul > li:not(.has-form) > a:not(.button),
 			body.branded .top-bar-section .dropdown li:not(.has-form):hover > a:not(.button),
+			body.branded .bg-primary,
 			body:not(.logged-in) .site-header .contain-to-grid,
 			body:not(.logged-in) .site-header .contain-to-grid .top-bar,
 			body:not(.logged-in) .site-header .top-bar-section li:not(.has-form) a:not(.button) {

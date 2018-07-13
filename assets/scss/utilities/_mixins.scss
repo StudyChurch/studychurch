@@ -1,0 +1,175 @@
+//
+// Buttons
+//
+
+
+//
+// Layout
+//
+
+@mixin display-flex-box($pack: center, $align: center) {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  box-pack: $pack;
+  box-align: $align;
+}
+
+@mixin no-space {
+  margin: 0;
+  padding: 0;
+}
+
+//
+// Decoration, polish
+//
+
+@mixin rounded($radius: 0.5em) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  border-radius: $radius;
+}
+
+@mixin rounded-top($radius: 0.5em) {
+  -webkit-border-radius: $radius $radius 0 0;
+  -moz-border-radius: $radius $radius 0 0;
+  border-radius: $radius $radius 0 0;
+}
+
+@mixin rounded-top-right($radius: 0.5em) {
+  -webkit-border-radius: 0 $radius 0 0;
+  -moz-border-radius: 0 $radius 0 0;
+  border-radius: 0 $radius 0 0;
+}
+
+@mixin rounded-top-left($radius: 0.5em) {
+  -webkit-border-radius: $radius 0 0 0;
+  -moz-border-radius: $radius 0 0 0;
+  border-radius: $radius 0 0 0;
+}
+
+@mixin rounded-bottom($radius: 0.5em) {
+  -webkit-border-radius: 0 0 $radius $radius;
+  -moz-border-radius: 0 0 $radius $radius;
+  border-radius: 0 0 $radius $radius;
+}
+
+@mixin rounded-bottom-right($radius: 0.5em) {
+  -webkit-border-radius: 0 0 $radius 0;
+  -moz-border-radius: 0 0 $radius 0;
+  border-radius: 0 0 $radius 0;
+}
+
+@mixin rounded-bottom-left($radius: 0.5em) {
+  -webkit-border-radius: 0 0 0 $radius;
+  -moz-border-radius: 0 0 0 $radius;
+  border-radius: 0 0 0 $radius;
+}
+
+@mixin rounded-left($radius: 0.5em) {
+  -webkit-border-radius: $radius 0 0 $radius;
+  -moz-border-radius: $radius 0 0 $radius;
+  border-radius: $radius 0 0 $radius;
+}
+
+@mixin rounded-right($radius: 0.5em) {
+  -webkit-border-radius: 0 $radius $radius 0;
+  -moz-border-radius: 0 $radius $radius 0;
+  border-radius: 0 $radius $radius 0;
+}
+
+@mixin opacity($opacity) {
+  opacity: $opacity;
+
+  $opacity-ie: $opacity * 100;
+
+  filter: alpha(opacity = $opacity-ie);
+}
+
+@mixin block-centered($width) {
+  width: $width;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  position: relative;
+  z-index: 1;
+  clear: both;
+}
+
+@mixin icon-before($icon) {
+  &:before {
+    @extend .icon_styles;
+
+    content: $icon;
+  }
+}
+
+@mixin icon-after($icon) {
+  &:after {
+    @extend .icon_styles;
+
+    content: $icon;
+  }
+}
+
+@mixin img-rounded($width: 100px) {
+  width: $width;
+  height: $width;
+  display: block;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: 50% 50% !important;
+  margin: 0 auto;
+
+  @include rounded(50px);
+}
+
+@mixin hover-bg($bg) {
+  background: $bg;
+
+  &:hover {
+    background: lighten($bg, 6);
+  }
+}
+
+//
+// Typography
+//
+
+@mixin font-smoothing {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
+}
+
+@mixin clearfix {
+  &::after {
+    clear: both;
+    content: "";
+    display: block;
+  }
+}
+
+@mixin placeholder {
+  &::-webkit-input-placeholder {
+    @content;
+  }
+
+  &:-moz-placeholder {
+    @content;
+  }
+
+  &::-moz-placeholder {
+    @content;
+  }
+
+  &:-ms-input-placeholder {
+    @content;
+  }
+}
+
+@mixin border-radius($radius) {
+	border-radius: $radius;
+}

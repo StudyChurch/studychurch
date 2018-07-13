@@ -9,16 +9,17 @@
     "email": "tanner@iwitnessdesign.com",
     "url": "tannermoushey.com"
   },
-  "devDependencies": {
-    "grunt": "*",
-    "matchdep": "*",
-    "grunt-contrib-concat": "*",
-    "grunt-contrib-uglify": "*",
-    "grunt-contrib-cssmin": "*",
-    "grunt-contrib-jshint": "*",
-    "grunt-contrib-nodeunit": "*",
-    "grunt-contrib-watch":    "*",
-    "grunt-contrib-sass":     "*"
+  "scripts": {
+    "watch": "NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "dev": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch-poll": "npm run watch -- --watch-poll",
+    "hot": "cross-env NODE_ENV=development webpack-dev-server --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "production": "NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
   },
-  "keywords": []
+  "devDependencies": {
+    "foundation-sites": "^6.5.0-rc.2",
+    "laravel-mix": "^2.1.11"
+  },
+  "keywords": [],
+  "dependencies": {}
 }
