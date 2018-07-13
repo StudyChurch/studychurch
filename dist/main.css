@@ -9488,6 +9488,10 @@ hr.noline {
   display: block;
 }
 
+.bg-primary {
+  background: #3ebeb2;
+}
+
 /* =WordPress Core
 -------------------------------------------------------------- */
 

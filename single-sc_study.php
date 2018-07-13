@@ -61,6 +61,19 @@ get_comments(); ?>
 									<span class="small">(<a href="/study-edit/?action=edit&study=<?php echo absint( $study_id ); ?>"><?php _e( 'Edit this study', 'sc' ); ?></a>)
 									</span><?php endif; ?></h4>
 							<?php get_template_part( 'partials/study' ); ?>
+							<h6 class="study-actions">
+								<?php if ( bp_get_group_id() ) : ?>
+									<a href="<?php echo bp_get_group_permalink(); ?>"><i class="fa fa-users"></i> <?php bp_group_name(); ?>
+									</a>&nbsp; &nbsp;
+								<?php endif; ?>
+								<a href="#" data-reveal-id="study-chapters"><i class="fa fa-list"></i> <?php _e( 'All Chapters', 'sc' ); ?>
+								</a>&nbsp; &nbsp;
+
+								<?php if ( apply_filters( 'sc_study_show_print', true, $study_id ) ) : ?>
+									<a href="#" onclick="window.print(); return false;"><i class="fa fa-print"></i> <?php _e( 'Print this lesson', 'sc' ); ?>
+									</a>
+								<?php endif; ?>
+							</h6>
 						</div>
 					<?php endif; ?>
 				</div>
