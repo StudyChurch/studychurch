@@ -1,0 +1,16 @@
+{
+  "name": "studychurch/studychurch",
+  "type": "wordpress-theme",
+  "license": "GPL2",
+  "authors": [
+    {
+      "name": "Tanner Moushey",
+      "email": "tanner@iwitnessdesign.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "StudyChurch\\": "inc/"
+    }
+  }
+}

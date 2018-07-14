@@ -1,7 +1,8 @@
 <?php
 
-SC_Assignment_Notificatinos::get_instance();
-class SC_Assignment_Notificatinos {
+namespace StudyChurch\Assignments;
+
+class Notifications {
 
 	/**
 	 * @var
@@ -9,12 +10,12 @@ class SC_Assignment_Notificatinos {
 	protected static $_instance;
 
 	/**
-	 * Only make one instance of the SC_Assignment_Notificatinos
+	 * Only make one instance of the Notifications
 	 *
-	 * @return SC_Assignment_Notificatinos
+	 * @return Notifications
 	 */
 	public static function get_instance() {
-		if ( ! self::$_instance instanceof SC_Assignment_Notificatinos ) {
+		if ( ! self::$_instance instanceof Notifications ) {
 			self::$_instance = new self();
 		}
 
@@ -61,7 +62,7 @@ class SC_Assignment_Notificatinos {
 		remove_filter( 'the_content', 'rcp_filter_restricted_content', 100 );
 
 		$group = groups_get_group( 'group_id=' . $group_id );
-		$ass = new SC_Assignments_Query( false );
+		$ass = new Query( false );
 		$ass->assignment = get_post( $assignment['id'] );
 		ob_start(); ?>
 		<p><?php esc_html_e( 'You have a new assignment from', 'sc' ); ?> <?php bp_group_name( $group ); ?></p>
@@ -161,7 +162,7 @@ class SC_Assignment_Notificatinos {
 			return;
 		}
 
-		$ass = new SC_Assignments_Query( false );
+		$ass = new Query( false );
 		$ass->assignment = $assignment;
 		global $post;
 		$old_post = $post;

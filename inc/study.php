@@ -1,7 +1,8 @@
 <?php
 
-SC_Study::get_instance();
-class SC_Study {
+namespace StudyChurch;
+
+class Study {
 
 	/**
 	 * @var
@@ -9,12 +10,17 @@ class SC_Study {
 	protected static $_instance;
 
 	/**
-	 * Only make one instance of the SC_Study
+	 * @var Study\Actions
+	 */
+	public $actions;
+
+	/**
+	 * Only make one instance of the Study
 	 *
-	 * @return SC_Study
+	 * @return Study
 	 */
 	public static function get_instance() {
-		if ( ! self::$_instance instanceof SC_Study ) {
+		if ( ! self::$_instance instanceof Study ) {
 			self::$_instance = new self();
 		}
 
@@ -26,14 +32,50 @@ class SC_Study {
 	 */
 	protected function __construct() {
 		add_action( 'wp_ajax_sc_save_answer', array( $this, 'save_answer' ) );
-		add_action( 'template_redirect',      array( $this, 'setup_study_group' ) );
-		add_action( 'template_redirect',      array( $this, 'redirect_on_empty' ) );
-		add_action( 'wp_head',                array( $this, 'print_styles'      ) );
-		add_action( 'pre_get_posts',          array( $this, 'study_archive'     ) );
+		add_action( 'template_redirect', array( $this, 'setup_study_group' ) );
+		add_action( 'template_redirect', array( $this, 'redirect_on_empty' ) );
+		add_action( 'wp_head', array( $this, 'print_styles' ) );
+		add_action( 'pre_get_posts', array( $this, 'study_archive' ) );
 
-		add_filter( 'private_title_format',   array( $this, 'private_title_format' ), 10, 2 );
-		add_filter( 'user_has_cap',           array( $this, 'private_study_cap'    ), 10, 4 );
-		add_filter( 'get_page_uri',           array( $this, 'allow_private_parent' ), 10, 2 );
+		add_filter( 'private_title_format', array( $this, 'private_title_format' ), 10, 2 );
+		add_filter( 'user_has_cap', array( $this, 'private_study_cap' ), 10, 4 );
+		add_filter( 'get_page_uri', array( $this, 'allow_private_parent' ), 10, 2 );
+
+		// CPT
+		add_action( 'init', array( $this, 'study_cpt' ) );
+
+		// API
+		add_action( 'rest_api_init', 'study_api_init', 0 );
+		add_action( 'init', 'sc_study_extra_api_post_type_arguments', 11 );
+
+		// Groups
+		add_action( 'bp_init', array( $this, 'register_group_extension' ) );
+
+		$this->actions = Study\Actions::get_instance();
+	}
+
+	public function register_group_extension() {
+		// if we aren't in a group, don't bother
+		if ( ! bp_is_group() ) {
+			return;
+		}
+
+		bp_register_group_extension( 'StudyChurch\Study\Group' );
+	}
+
+	public function study_api_init() {
+		global $study_api_sc_study;
+
+		$study_api_sc_study = new Study\API();
+		$study_api_sc_study->register_routes();
+	}
+
+	public function sc_study_extra_api_post_type_arguments() {
+		global $wp_post_types;
+
+		$wp_post_types['sc_study']->show_in_rest          = true;
+		$wp_post_types['sc_study']->rest_base             = 'study';
+		$wp_post_types['sc_study']->rest_controller_class = 'WP_REST_Posts_Controller';
 	}
 
 	/**
@@ -267,31 +309,36 @@ class SC_Study {
 		return $uri;
 	}
 
-}
+	public function  study_cpt() {
+		$labels = array(
+			'name'               => _x( 'Studies', 'post type general name', 'sc' ),
+			'singular_name'      => _x( 'Study', 'post type singular name', 'sc' ),
+			'add_new_item'       => __( 'Add New Study', 'sc' ),
+			'new_item'           => __( 'New Study', 'sc' ),
+			'edit_item'          => __( 'Edit Study', 'sc' ),
+			'view_item'          => __( 'View Study', 'sc' ),
+			'all_items'          => __( 'All Studies', 'sc' ),
+			'search_items'       => __( 'Search Studies', 'sc' ),
+			'not_found'          => __( 'No studies found.', 'sc' ),
+			'not_found_in_trash' => __( 'No studies found in Trash.', 'sc' )
+		);
 
-/**
- * Is this answer private?
- *
- * @param $post_id
- *
- * @return bool
- */
-function sc_answer_is_private( $post_id ) {
-	return apply_filters( 'sc_answer_is_private', ( 'private' == get_post_meta( $post_id, '_sc_privacy', true ) ), $post_id );
-}
+		$args = array(
+			'labels'             => $labels,
+			'public'             => true,
+			'rewrite'            => array(
+				'slug'       => 'studies',
+				'with_front' => false,
+			),
+			'hierarchical'       => true,
+			'has_archive'        => true,
+			'menu_position'      => 5,
+			'menu_icon'          => 'dashicons-welcome-write-blog',
+			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments', 'page-attributes' )
+		);
 
-function sc_get_privacy( $post_id ) {
-	return get_post_meta( $post_id, '_sc_privacy', true );
-}
-
-function sc_set_privacy( $privacy, $post_id ) {
-	if ( 'private' != $privacy ) {
-		return delete_post_meta( $post_id, '_sc_privacy' );
+		register_post_type( 'sc_study', $args );
 	}
 
-	return update_post_meta( $post_id, '_sc_privacy', 'private' );
-}
 
-function sc_answer_get_activity_id( $comment_id ) {
-	return get_comment_meta( $comment_id, 'activity_id', true );
 }

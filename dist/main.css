@@ -9438,6 +9438,10 @@ hr.noline {
   font-style: italic;
 }
 
+.description p {
+  font-size: 1rem;
+}
+
 .screen-reader {
   display: none;
   text-indent: -99999px;

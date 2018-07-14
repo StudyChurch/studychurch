@@ -1,7 +1,8 @@
 <?php
 
-SC_Study_Edit::get_instance();
-class SC_Study_Edit {
+namespace StudyChurch\Study;
+
+class Actions {
 
 	/**
 	 * @var
@@ -9,12 +10,12 @@ class SC_Study_Edit {
 	protected static $_instance;
 
 	/**
-	 * Only make one instance of the SC_Study_Edit
+	 * Only make one instance of the Actions
 	 *
-	 * @return SC_Study_Edit
+	 * @return Actions
 	 */
 	public static function get_instance() {
-		if ( ! self::$_instance instanceof SC_Study_Edit ) {
+		if ( ! self::$_instance instanceof Actions ) {
 			self::$_instance = new self();
 		}
 
@@ -26,7 +27,7 @@ class SC_Study_Edit {
 	 */
 	protected function __construct() {
 		add_action( 'template_redirect', array( $this, 'maybe_study_save' ) );
-		add_action( 'wp',                array( $this, 'study_edit_actions' ) );
+		add_action( 'wp', array( $this, 'study_edit_actions' ) );
 
 		add_action( 'sc_study_edit_sidebar_before', array( $this, 'study_status' ) );
 
@@ -105,7 +106,7 @@ class SC_Study_Edit {
 
 		$study_id = absint( $_POST['study_id'] );
 
-		$study = get_object_vars( get_post( $study_id ) );
+		$study                 = get_object_vars( get_post( $study_id ) );
 		$study['post_content'] = wp_kses_post( $_POST['study-description'] );
 
 		if ( empty( $study['post_content'] ) ) {
@@ -128,7 +129,8 @@ class SC_Study_Edit {
 		add_action( 'wp_footer', array( $this, 'study_edit_templates' ) );
 	}
 
-	public function study_edit_scripts() {}
+	public function study_edit_scripts() {
+	}
 
 	/**
 	 * Print Backbone templates
@@ -148,7 +150,7 @@ class SC_Study_Edit {
 		}
 
 		// everyone can edit their own posts
-		switch( $cap ) {
+		switch ( $cap ) {
 			case 'edit_posts' :
 			case 'publish_posts' :
 				$caps = array( 'exist' );
@@ -173,76 +175,75 @@ class SC_Study_Edit {
 		<?php endif;
 	}
 
-}
+	/**
+	 * Get the current step for this study
+	 *
+	 * @param $study_id
+	 *
+	 * @return string
+	 */
+	public static function get_current_step( $study_id ) {
 
-/**
- * Get the current step for this study
- *
- * @param $study_id
- *
- * @return string
- */
-function sc_study_edit_get_current_step( $study_id ) {
+		if ( sc_get( 'step' ) ) {
+			return sc_get( 'step' );
+		}
 
-	if ( sc_get( 'step' ) ) {
-		return sc_get( 'step' );
+		if ( ! get_the_title( $study_id ) ) {
+			return 'title';
+		}
+
+		if ( ! get_post_meta( $study_id, '_sc_study_format' ) ) {
+			update_post_meta( $study_id, '_sc_study_format', 'lesson' );
+			// return 'format';
+		}
+
+		//	if ( ( ! get_post( $study_id )->post_content ) && ( ! get_post_meta( $study_id, '_sc_study_no_intro', true ) ) ) {
+		//		return 'intro';
+		//	}
+
+		return 'content';
 	}
 
-	if ( ! get_the_title( $study_id ) ) {
-		return 'title';
+	/**
+	 * Does the current study edit step have the sidebar?
+	 *
+	 * @return bool
+	 */
+	public static function step_has_sidebar( $step = null ) {
+		if ( ! $step ) {
+			$step = self::get_current_step( sc_get( 'study' ) );
+		}
+
+		return ( in_array( $step, array( 'content' ) ) );
 	}
 
-	if ( ! get_post_meta( $study_id, '_sc_study_format') ) {
-		update_post_meta( $study_id, '_sc_study_format', 'lesson' );
-//		return 'format';
+	/**
+	 * Footer nav map for study edit
+	 *
+	 * @param $study_id
+	 * @param $current_step
+	 *
+	 * @return array
+	 */
+	public static function get_manage_map( $study_id, $current_step ) {
+		$nav = array();
+
+		$study_map = array(
+			'title'   => __( 'Title & Description', 'sc' ),
+			'format'  => __( 'Format', 'sc' ),
+			'intro'   => __( 'Introduction', 'sc' ),
+			'content' => __( 'Content', 'sc' ),
+		);
+
+		if ( 'publish' == get_post_status( $study_id ) ) {
+			unset( $study_map['publish'] );
+		}
+
+		foreach ( $study_map as $step => $label ) {
+			$class = ( $current_step == $step ) ? ' class="current"' : '';
+			$nav[] = sprintf( '<span %s >%s</span>', $class, esc_html( $label ) );
+		}
+
+		return $nav;
 	}
-
-//	if ( ( ! get_post( $study_id )->post_content ) && ( ! get_post_meta( $study_id, '_sc_study_no_intro', true ) ) ) {
-//		return 'intro';
-//	}
-
-	return 'content';
-}
-
-/**
- * Does the current study edit step have the sidebar?
- *
- * @return bool
- */
-function sc_study_edit_step_has_sidebar( $step = null ) {
-	if ( ! $step ) {
-		$step = sc_study_edit_get_current_step( sc_get( 'study' ) );
-	}
-
-	return ( in_array( $step, array( 'content' ) ) );
-}
-
-/**
- * Footer nav map for study edit
- *
- * @param $study_id
- * @param $current_step
- *
- * @return array
- */
-function sc_study_get_manage_map( $study_id, $current_step ) {
-	$nav = array();
-
-	$study_map = array(
-		'title'   => __( 'Title & Description', 'sc' ),
-		'format'  => __( 'Format', 'sc' ),
-		'intro'   => __( 'Introduction', 'sc' ),
-		'content' => __( 'Content', 'sc' ),
-	);
-
-	if ( 'publish' == get_post_status( $study_id ) ) {
-		unset( $study_map['publish'] );
-	}
-
-	foreach( $study_map as $step => $label ) {
-		$class = ( $current_step == $step ) ? ' class="current"' : '';
-		$nav[] = sprintf( '<span %s >%s</span>', $class, esc_html( $label ) );
-	}
-
-	return $nav;
 }

@@ -1,7 +1,8 @@
 <?php
 
-// class-myplugin-api-mytype.php
-class Study_API_SC_Study extends WP_REST_Posts_Controller {
+namespace StudyChurch\Study;
+
+class API extends WP_REST_Posts_Controller {
 	protected $base = 'study';
 	protected $post_type = 'sc_study';
 

@@ -1,7 +1,8 @@
 <?php
 
-SC_Profile::get_instance();
-class SC_Profile {
+namespace StudyChurch;
+
+class Profile {
 
 	/**
 	 * @var
@@ -9,12 +10,12 @@ class SC_Profile {
 	protected static $_instance;
 
 	/**
-	 * Only make one instance of the SC_Profile
+	 * Only make one instance of the Profile
 	 *
-	 * @return SC_Profile
+	 * @return Profile
 	 */
 	public static function get_instance() {
-		if ( ! self::$_instance instanceof SC_Profile ) {
+		if ( ! self::$_instance instanceof Profile ) {
 			self::$_instance = new self();
 		}
 

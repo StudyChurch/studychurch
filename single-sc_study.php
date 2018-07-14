@@ -81,7 +81,7 @@ get_comments(); ?>
 
 				<div class="row">
 
-					<div class="study-content medium-9 medium-centered small-12 columns">
+					<div class="study-content medium-10 medium-centered small-12 columns">
 
 
 						<?php while ( $elements->have_posts() ) : $elements->the_post(); ?>

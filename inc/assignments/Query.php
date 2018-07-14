@@ -1,6 +1,8 @@
 <?php
 
-class SC_Assignments_Query {
+namespace StudyChurch\Assignments;
+
+class Query {
 
 	public static $_key = 'sc_assignments';
 
@@ -10,6 +12,9 @@ class SC_Assignments_Query {
 
 	public $assignments = array();
 
+	/**
+	 * @var \WP_Post
+	 */
 	public $assignment = null;
 
 	public $query_args = array();
@@ -24,7 +29,7 @@ class SC_Assignments_Query {
 			'group_id'    => bp_get_current_group_id(),
 			'date_start'  => date( DATE_RSS, current_time( 'timestamp' ) ),
 			'date_finish' => '+ 1 year',
-			'count'       => -1,
+			'count'       => - 1,
 		) );
 
 		return $this->parse_query();
@@ -39,16 +44,22 @@ class SC_Assignments_Query {
 	public function parse_query() {
 
 		// remove legacy assignments
-		if ( $assignments = groups_get_groupmeta( $this->query_args['group_id'], SC_Assignments_Query::$_key, true ) ) {
-			remove_action( 'sc_assignment_create', array( SC_Assignment_Notificatinos::get_instance(), 'new_assignment' ), 10, 2 );
+		if ( $assignments = groups_get_groupmeta( $this->query_args['group_id'], Query::$_key, true ) ) {
+			remove_action( 'sc_assignment_create', array(
+				Notifications::get_instance(),
+				'new_assignment'
+			), 10 );
 
-			foreach( $assignments as $assignment ) {
+			foreach ( $assignments as $assignment ) {
 				sc_add_group_assignment( $assignment, $this->query_args['group_id'] );
 			}
 
-			add_action( 'sc_assignment_create', array( SC_Assignment_Notificatinos::get_instance(), 'new_assignment' ), 10, 2 );
+			add_action( 'sc_assignment_create', array(
+				Notifications::get_instance(),
+				'new_assignment'
+			), 10, 2 );
 
-			groups_delete_groupmeta( $this->query_args['group_id'], SC_Assignments_Query::$_key );
+			groups_delete_groupmeta( $this->query_args['group_id'], Query::$_key );
 		}
 
 		$order = ( current_time( 'timestamp' ) > $this->query_args['date_start'] ) ? 'ASC' : 'DESC';
@@ -119,13 +130,13 @@ class SC_Assignments_Query {
 		echo $this->get_the_key();
 	}
 
-		/**
-		 * Get the current assignments key
-		 * @return mixed
-		 */
-		public function get_the_key() {
-			return $this->assignment->ID;
-		}
+	/**
+	 * Get the current assignments key
+	 * @return mixed
+	 */
+	public function get_the_key() {
+		return $this->assignment->ID;
+	}
 
 	/**
 	 * Print the assignment content
@@ -133,32 +144,35 @@ class SC_Assignments_Query {
 	public function the_content() {
 		echo apply_filters( 'the_content', wp_kses_post( $this->get_the_content() ) );
 	}
-		/**
-		 * Get the assignment content
-		 *
-		 * @return mixed
-		 */
-		public function get_the_content() {
-			return $this->assignment->post_content;
-		}
+
+	/**
+	 * Get the assignment content
+	 *
+	 * @return mixed
+	 */
+	public function get_the_content() {
+		return $this->assignment->post_content;
+	}
 
 	/**
 	 * Print the assignment due date
+	 *
 	 * @param string $d
 	 */
 	public function the_date( $d = 'l, F j' ) {
 		echo $this->get_the_date( $d );
 	}
-		/**
-		 * Get the assignment due date
-		 *
-		 * @param string $d
-		 *
-		 * @return int
-		 */
-		public function get_the_date( $d = 'l, F j' ) {
-			return get_the_date( $d, $this->assignment->ID );
-		}
+
+	/**
+	 * Get the assignment due date
+	 *
+	 * @param string $d
+	 *
+	 * @return int
+	 */
+	public function get_the_date( $d = 'l, F j' ) {
+		return get_the_date( $d, $this->assignment->ID );
+	}
 
 	/**
 	 * Print the formatted date
@@ -177,48 +191,24 @@ class SC_Assignments_Query {
 		} ?>
 
 		<ul class="assignment-lessons">
-			<?php foreach( $this->get_the_lessons() as $lesson ) : ?>
-				<li><a href="<?php echo get_the_permalink( $lesson ); ?>"><?php echo get_the_title( $lesson ); ?></a></li>
+			<?php foreach ( $this->get_the_lessons() as $lesson ) : ?>
+				<li><a href="<?php echo get_the_permalink( $lesson ); ?>"><?php echo get_the_title( $lesson ); ?></a>
+				</li>
 			<?php endforeach; ?>
 		</ul>
 		<?php
 	}
 
-		/**
-		 * Get the lessons for this assignment
-		 *
-		 * @return array|bool
-		 */
-		public function get_the_lessons() {
-			if ( ! $lessons = get_post_meta( $this->assignment->ID, 'lessons', true ) ) {
-				return false;
-			}
-
-			return array_map( 'absint', $lessons );
-		}
-}
-
-/**
- * Print the assignment permalink for the current group
- *
- * @param $group
- */
-function sc_the_assignment_permalink( $group = false ) {
-	echo esc_url( sc_get_the_assignment_permalink( $group ) );
-}
 	/**
-	 * Get the permalink for assignments
+	 * Get the lessons for this assignment
 	 *
-	 * @param $group
-	 *
-	 * @return string
+	 * @return array|bool
 	 */
-	function sc_get_the_assignment_permalink( $group = false ) {
-		global $groups_template;
-
-		if ( empty( $group ) ) {
-			$group =& $groups_template->group;
+	public function get_the_lessons() {
+		if ( ! $lessons = get_post_meta( $this->assignment->ID, 'lessons', true ) ) {
+			return false;
 		}
 
-		return esc_url( trailingslashit( bp_get_group_permalink( $group ) . 'assignments' ) );
+		return array_map( 'absint', $lessons );
 	}
+}
