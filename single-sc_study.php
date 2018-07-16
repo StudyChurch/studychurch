@@ -26,7 +26,6 @@ get_comments(); ?>
 	<div id="buddypress" class="small-12 columns" role="main">
 		<div id="content" role="main">
 			<?php while ( have_posts() ) : the_post(); ?>
-				<?php sc_study_navigation(); ?>
 
 				<div class="row">
 					<?php if ( has_post_thumbnail( $study_id ) ) : ?>
@@ -92,6 +91,8 @@ get_comments(); ?>
 
 						<?php wp_reset_postdata(); ?>
 
+						<?php sc_study_navigation(); ?>
+
 						<?php do_action( 'sc_study_chapter_after', get_the_ID() ); ?>
 
 					</div>
@@ -103,8 +104,6 @@ get_comments(); ?>
 
 	</div>
 </div>
-
-<?php sc_study_navigation(); ?>
 
 <div id="study-chapters" class="reveal-modal text-centered small" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
 	<h2 ><?php echo get_the_title( $study_id ); ?> Chapters</h2>

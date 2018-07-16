@@ -10597,14 +10597,6 @@ textarea {
   list-style-type: disc;
 }
 
-.single-sc_study .lesson-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  z-index: 10;
-  width: 100%;
-}
-
 .single-sc_study .lesson-nav span {
   max-width: 45%;
   white-space: nowrap;
@@ -10614,8 +10606,6 @@ textarea {
 
 .single-sc_study .lesson-nav a {
   display: block;
-  padding: 1.5rem 2rem;
-  color: white;
   position: relative;
 }
 
@@ -10627,14 +10617,6 @@ textarea {
   width: 100%;
   height: 100%;
   background: rgba(255, 255, 255, 0.1);
-}
-
-.single-sc_study .lesson-nav a:hover {
-  text-decoration: none;
-}
-
-.single-sc_study .lesson-nav a:hover:after {
-  background: rgba(255, 255, 255, 0.3);
 }
 
 .sc_study .comment-form textarea {

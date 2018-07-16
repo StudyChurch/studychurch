@@ -170,7 +170,7 @@ function sc_study_navigation( $id = null ) {
 		$output .= sprintf( '<span class="right next"><a href="%s" title="%s">%s <i class="fa fa-caret-right"></i></a></span>', get_the_permalink( $next->ID ), the_title_attribute( 'echo=0&post=' . $next->ID ), get_the_title( $next->ID ) );
 	}
 
-	printf( '<div class="clearfix lesson-nav bg-primary">%s</div>', $output );
+	printf( '<div class="clearfix lesson-nav">%s</div>', $output );
 
 }
 
