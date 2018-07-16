@@ -10,9 +10,9 @@ class Study {
 	protected static $_instance;
 
 	/**
-	 * @var Study\Actions
+	 * @var Study\Edit
 	 */
-	public $actions;
+	public $edit;
 
 	public $answers;
 
@@ -52,7 +52,7 @@ class Study {
 		// Groups
 		add_action( 'bp_init', array( $this, 'register_group_extension' ) );
 
-		$this->actions = Study\Edit::get_instance();
+		$this->edit = Study\Edit::get_instance();
 		$this->answers = Study\Answers::get_instance();
 	}
 
