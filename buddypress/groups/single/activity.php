@@ -1,31 +1,27 @@
 <?php
-$assignments = new SC_Assignments_Query( array( 'count' => 1 ) );
+$assignments = new StudyChurch\Assignments\Query( array( 'count' => 1 ) );
 ?>
-
-<?php if ( 0 && $study = groups_get_groupmeta( bp_get_group_id(), 'study_name', true ) ) : ?>
-	<h2><?php _e( 'Current Study', 'sc' ); ?>: <?php echo esc_html( $study ); ?> </h2>
-<?php endif; ?>
 
 <div class="panel">
 
 	<?php if ( sc_user_can_manage_group() ) : ?>
-		<a href="<?php sc_the_assignment_permalink(); ?>" class="alignright ucase small"><?php _e( 'Manage assignments', 'sc' ); ?></a>
+		<a href="<?php sc_the_assignment_permalink(); ?>" class="alignright ucase small"><?php _e( 'Manage todos', 'sc' ); ?></a>
 	<?php else: ?>
-		<a href="<?php sc_the_assignment_permalink(); ?>" class="alignright ucase small"><?php _e( 'See all assignments', 'sc' ); ?></a>
+		<a href="<?php sc_the_assignment_permalink(); ?>" class="alignright ucase small"><?php _e( 'See all todos', 'sc' ); ?></a>
 	<?php endif; ?>
 
 	<?php if ( $assignments->have_assignments() ) : ?>
 		<?php while( $assignments->the_assignment() ) : ?>
-			<h4><?php _e( 'Assignment Due: ', 'sc' ); ?><?php $assignments->the_date_formatted(); ?></h4>
+			<h4><?php _e( 'Due on: ', 'sc' ); ?><?php $assignments->the_date_formatted(); ?></h4>
 			<?php $assignments->the_lessons(); ?>
 			<?php $assignments->the_content(); ?>
 		<?php endwhile; ?>
 	<?php else : ?>
 		<p>
-			<?php esc_html_e( 'There are no assignment for this group.', 'sc' ); ?>
+			<?php esc_html_e( 'There are no todos for this group.', 'sc' ); ?>
 		</p>
 		<?php if ( sc_user_can_manage_group() ) : ?>
-			<a href="#" data-reveal-id="create-assignment" class="small ucase"><i class="fa fa-plus-circle"></i> <?php _e( 'Add an assignment', 'sc' ); ?></a>
+			<a href="#" data-reveal-id="create-assignment" class="small ucase"><i class="fa fa-plus-circle"></i> <?php _e( 'Add an todo', 'sc' ); ?></a>
 		<?php endif; ?>
 	<?php endif; ?>
 </div>

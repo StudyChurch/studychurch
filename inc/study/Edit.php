@@ -2,7 +2,7 @@
 
 namespace StudyChurch\Study;
 
-class Actions {
+class Edit {
 
 	/**
 	 * @var
@@ -10,12 +10,12 @@ class Actions {
 	protected static $_instance;
 
 	/**
-	 * Only make one instance of the Actions
+	 * Only make one instance of the Edit
 	 *
-	 * @return Actions
+	 * @return Edit
 	 */
 	public static function get_instance() {
-		if ( ! self::$_instance instanceof Actions ) {
+		if ( ! self::$_instance instanceof Edit ) {
 			self::$_instance = new self();
 		}
 

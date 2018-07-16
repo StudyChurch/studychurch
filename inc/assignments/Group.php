@@ -15,7 +15,7 @@ class Group extends \BP_Group_Extension {
 	}
 
 	function display( $group_id = null ) {
-		bp_get_template_part( 'assignments/edit.php' );
+		bp_get_template_part( 'assignments/edit' );
 	}
 
 }

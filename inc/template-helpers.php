@@ -92,72 +92,7 @@ function sc_get_data_types() {
  * @return bool|int|mixed|null
  */
 function sc_get_study_id( $id = null ) {
-
-	if ( ! $id ) {
-		$id = get_the_ID();
-	}
-
-	if ( $parent_id = get_post_meta( $id, '_sc_study_id', true ) ) {
-		return $parent_id;
-	}
-
-	$this_id = $id;
-
-	// keep getting parents until there are no more to get.
-	while ( $parent_id = wp_get_post_parent_id( $id ) ) {
-		$id = $parent_id;
-	}
-
-	// cache results
-	update_post_meta( $this_id, '_sc_study_id', $id );
-
-	return $id;
-}
-
-/**
- * Get the id of the group that licensed this study
- *
- * @param null $study_id
- * @param null $user_id
- *
- * @return bool
- */
-function sc_get_study_user_group_id( $study_id = null, $user_id = null ) {
-
-	if ( ! $study_id ) {
-		$study_id = get_the_ID();
-	}
-
-	$study_id = sc_get_study_id( $study_id );
-
-	if ( ! $user_id ) {
-		$user_id = get_current_user_id();
-	}
-
-	if ( empty( $study_id ) || empty( $user_id ) ) {
-		return false;
-	}
-
-	foreach ( groups_get_groups( 'show_hidden=true&user_id=' . $user_id )['groups'] as $group ) {
-		if ( sc_get_group_study_id( $group->id ) == $study_id ) {
-			return $group->id;
-		}
-	}
-
-	return false;
-
-}
-
-/**
- * Can the user access this study?
- *
- * @param null $study_id
- * @param null $user_id
- *
- * @return bool
- */
-function sc_user_can_access_study( $study_id = null, $user_id = null ) {
-	return (bool) sc_get_study_user_group_id( $study_id, $user_id );
+	return studychurch()->study::get_study_id( $id );
 }
 
 function sc_study_index( $id = null ) {
@@ -279,14 +214,10 @@ function sc_sort_member_query() {
  *
  * @param null $group_id
  *
- * @return mixed
+ * @return array
  */
 function sc_get_group_study_id( $group_id = null ) {
-	if ( ! $group_id ) {
-		$group_id = bp_get_current_group_id();
-	}
-
-	return groups_get_groupmeta( $group_id, '_sc_study', true );
+	return studychurch()->study::get_group_studies( $group_id );
 }
 
 function sc_get_group_invite_key( $group_id = null ) {
@@ -587,7 +518,11 @@ function sc_add_group_assignment( $assignment, $group_id ) {
 		return false;
 	}
 
-	$date = new DateTime( $assignment['date'] . '23:59:59', new DateTimeZone( get_option( 'timezone_string', 'America/Los_Angeles' ) ) );
+	if ( ! $timezone = get_option( 'timezone_string', 'America/Los_Angeles' ) ) {
+		$timezone = 'America/Los_Angeles';
+	}
+
+	$date = new DateTime( $assignment['date'] . '23:59:59', new DateTimeZone( $timezone ) );
 
 	$assignment['id'] = wp_insert_post( array(
 		'post_author'  => get_current_user_id(),

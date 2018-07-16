@@ -3,7 +3,7 @@
  * Template for rendering assignment content
  */
 
-$assignments = new SC_Assignments_Query();
+$assignments = new StudyChurch\Assignments\Query();
 
 ?>
 <h1 class="h4"><?php esc_html_e( 'Assignments', 'sc' ); ?></h1>
@@ -13,7 +13,7 @@ $assignments = new SC_Assignments_Query();
 <?php endif; ?>
 
 <?php if ( $assignments->have_assignments() ) : $assignments->the_assignment(); ?>
-	<h4><?php _e( 'Assignment Due: ', 'sc' ); ?><?php $assignments->the_date_formatted(); ?></h4>
+	<h4><?php _e( 'Due on: ', 'sc' ); ?><?php $assignments->the_date_formatted(); ?></h4>
 	<?php $assignments->the_content(); ?>
 <?php else : ?>
 	<p>

@@ -9,7 +9,14 @@ class Setup {
 	 */
 	protected static $_instance;
 
+	/**
+	 * @var Assignments
+	 */
 	public $assignments;
+
+	/**
+	 * @var Profile
+	 */
 	public $profile;
 
 	/**

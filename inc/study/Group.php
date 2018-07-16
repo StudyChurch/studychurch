@@ -27,9 +27,7 @@ class Group extends \BP_Group_Extension {
 
 	}
 
-	public function setup_hooks() {
-//			add_filter();
-	}
+	public function setup_hooks() {}
 
 	/** Group extension methods ***************************************************/
 
@@ -109,7 +107,7 @@ class Group extends \BP_Group_Extension {
 				<?php foreach ( $studies as $study ) : ?>
 					<tr>
 						<td>
-							<input type="radio" id="study-<?php echo absint( $study->ID ); ?>" name="_sc_study" value="<?php echo absint( $study->ID ); ?>" <?php checked( self::group_get_option( $group_id, '_sc_study' ), $study->ID ); ?>/>
+							<input type="checkbox" id="study-<?php echo absint( $study->ID ); ?>" name="_sc_study[]" value="<?php echo absint( $study->ID ); ?>" <?php checked( in_array( $study->ID, (array) self::group_get_option( $group_id, '_sc_study' ) ) ); ?>/>
 						</td>
 						<td>
 							<label for="study-<?php echo absint( $study->ID ); ?>">
@@ -169,7 +167,7 @@ class Group extends \BP_Group_Extension {
 		}
 
 		if ( ! empty( $_POST['_sc_study'] ) ) {
-			$settings['_sc_study'] = absint( $_POST['_sc_study'] );
+			$settings['_sc_study'] = array_map( 'absint', $_POST['_sc_study'] );
 		}
 
 		// Save group settings
@@ -226,7 +224,7 @@ class Group extends \BP_Group_Extension {
 	 * @param  mixed  $default  the default value to fallback with
 	 *
 	 * @uses   groups_get_groupmeta() to get the meta value
-	 * @uses   apply_filters()        call "SC_Group_Studys_option{$option}" to override the group meta value
+	 * @uses   apply_filters()        call "sc_group_study_save_{$option}" to override the group meta value
 	 * @return mixed                  the meta value
 	 */
 	public static function group_get_option( $group_id = 0, $option = '', $default = '' ) {
@@ -244,7 +242,7 @@ class Group extends \BP_Group_Extension {
 		 * @param   mixed $group_option the meta value
 		 * @param   int   $group_id     the group ID
 		 */
-		return apply_filters( "SC_Group_Studys_option{$option}", $group_option, $group_id );
+		return apply_filters( "sc_group_study_save_{$option}", $group_option, $group_id );
 	}
 
 }

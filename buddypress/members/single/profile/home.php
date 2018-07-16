@@ -7,23 +7,21 @@ $studies = get_pages( 'post_status=publish,pending,draft&post_type=sc_study&pare
 <?php if ( $groups['total'] ) : ?>
 	<div class="panel">
 
-		<h2><?php _e( 'Your Assignments', 'sc' ); ?></h2>
+		<h2><?php _e( 'Your Todos', 'sc' ); ?></h2>
 
 		<?php foreach ( $groups['groups'] as $group_id ) : $group = groups_get_group( 'group_id=' . $group_id ); ?>
-			<?php $assignments = new SC_Assignments_Query( array( 'count' => 1, 'group_id' => $group_id ) ); ?>
+			<?php $assignments = new StudyChurch\Assignments\Query( array( 'count' => 1, 'group_id' => $group_id ) ); ?>
 			<?php if ( $assignments->have_assignments() ) : $assignments->the_assignment(); $has_assignments = true; ?>
-				<h4><?php _e( 'Assignment Due:', 'sc' ); ?> <?php $assignments->the_date_formatted(); ?></h4>
+				<hr />
+				<p class="right small"><a href="<?php bp_group_permalink( $group ); ?>"><?php bp_group_name( $group ); ?></a></p>
+				<h4><?php _e( 'Due Date:', 'sc' ); ?> <?php $assignments->the_date_formatted(); ?></h4>
 				<?php $assignments->the_lessons(); ?>
 				<?php $assignments->the_content(); ?>
-				<p class="text-right small">
-					<a href="<?php echo get_the_permalink( sc_get_group_study_id( $group_id ) ); ?>"><?php echo get_the_title( sc_get_group_study_id( $group_id ) ); ?></a> |
-					<a href="<?php bp_group_permalink( $group ); ?>"><?php bp_group_name( $group ); ?></a>
-				</p>
 			<?php endif; ?>
 		<?php endforeach; ?>
 
 		<?php if ( ! $has_assignments ) : ?>
-			<p><?php _e( 'No assignments yet', 'sc' ); ?></p>
+			<p><?php _e( 'No todos yet', 'sc' ); ?></p>
 		<?php endif; ?>
 
 	</div>

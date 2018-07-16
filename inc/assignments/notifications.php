@@ -65,14 +65,12 @@ class Notifications {
 		$ass = new Query( false );
 		$ass->assignment = get_post( $assignment['id'] );
 		ob_start(); ?>
-		<p><?php esc_html_e( 'You have a new assignment from', 'sc' ); ?> <?php bp_group_name( $group ); ?></p>
+		<p><?php esc_html_e( 'You have a new todo from', 'sc' ); ?> <a href="<?php bp_group_permalink( $group ); ?>"><?php bp_group_name( $group ); ?></a></p>
 		<hr />
-		<h4><?php _e( 'Assignment Due:', 'sc' ); ?> <?php $ass->the_date_formatted(); ?></h4>
+		<h4><?php _e( 'Due on:', 'sc' ); ?> <?php $ass->the_date_formatted(); ?></h4>
 		<?php $ass->the_lessons(); ?>
 		<?php $ass->the_content(); ?>
-		<p style="text-align:right;font-size:small;">
-			<a href="<?php echo get_the_permalink( sc_get_group_study_id( $group_id ) ); ?>"><?php echo get_the_title( sc_get_group_study_id( $group_id ) ); ?></a> | <a href="<?php bp_group_permalink( $group ); ?>"><?php bp_group_name( $group ); ?></a>
-		</p>
+
 		<?php
 		$content = ob_get_clean();
 
@@ -105,7 +103,7 @@ class Notifications {
 
 		$reminders = array(
 			array(
-				'subject' => __( 'Here\'s your assignment.', 'sc' ),
+				'subject' => __( 'Here\'s your todo list.', 'sc' ),
 				'content'    => __( 'You have an assignment due in 6 days for %group_name%', 'sc' ),
 				'date_start'  => '+ 6 days',
 				'date_finish' => '+ 7 days',
@@ -170,11 +168,11 @@ class Notifications {
 		ob_start(); ?>
 		<p><?php echo esc_html( str_replace( '%group_name%', bp_get_group_name( $group ), $args['content'] ) ); ?></p>
 		<hr />
-		<h4><?php _e( 'Assignment Due:', 'sc' ); ?> <?php $ass->the_date_formatted(); ?></h4>
+		<h4><?php _e( 'Due on:', 'sc' ); ?> <?php $ass->the_date_formatted(); ?></h4>
 		<?php $ass->the_lessons(); ?>
 		<?php $ass->the_content(); ?>
 		<p style="text-align:right;font-size:small;">
-			<a href="<?php echo get_the_permalink( sc_get_group_study_id( $group_id ) ); ?>"><?php echo get_the_title( sc_get_group_study_id( $group_id ) ); ?></a> | <a href="<?php bp_group_permalink( $group ); ?>"><?php bp_group_name( $group ); ?></a>
+			<a href="<?php bp_group_permalink( $group ); ?>"><?php bp_group_name( $group ); ?></a>
 		</p>
 		<?php
 		$content = ob_get_clean();

@@ -39,7 +39,7 @@ class Assignments {
 
 	public function register_group_extension() {
 		// if we aren't in a group, don't bother
-		if ( ! bp_is_group() ) {
+		if ( ! bp_is_group() || ! bp_is_active( 'groups' ) || ! class_exists( 'BP_Group_Extension' ) ) {
 			return;
 		}
 
@@ -97,6 +97,25 @@ class Assignments {
 			bp_core_add_message( __( 'Ooops. Something went wrong, please make sure you have specified content or lessons and a due date.', 'sc' ), 'error' );
 		}
 
+	}
+
+	/** Study Helper Functions */
+
+	/**
+	 * Customize Study link to include group parameter for study answers
+	 *
+	 * @param      $lesson_id
+	 * @param null $group_id
+	 *
+	 * @return string
+	 * @author Tanner Moushey
+	 */
+	public static function get_group_link( $lesson_id, $group_id = null ) {
+		if ( ! $group_id ) {
+			$group_id = bp_get_current_group_id();
+		}
+
+		return add_query_arg( 'sc-group', $group_id, get_permalink( $lesson_id ) );
 	}
 
 }

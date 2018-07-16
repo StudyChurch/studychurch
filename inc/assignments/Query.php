@@ -192,11 +192,20 @@ class Query {
 
 		<ul class="assignment-lessons">
 			<?php foreach ( $this->get_the_lessons() as $lesson ) : ?>
-				<li><a href="<?php echo get_the_permalink( $lesson ); ?>"><?php echo get_the_title( $lesson ); ?></a>
-				</li>
+				<li><a href="<?php echo studychurch()->assignments::get_group_link( $lesson, $this->get_group_id() ); ?>"><?php echo get_the_title( $lesson ); ?></a></li>
 			<?php endforeach; ?>
 		</ul>
 		<?php
+	}
+
+	public function get_group_id() {
+		$group = wp_get_post_terms( $this->assignment->ID, 'sc_group' );
+
+		if ( empty( $group[0]->slug ) ) {
+			return;
+		}
+
+		return absint( $group[0]->slug );;
 	}
 
 	/**

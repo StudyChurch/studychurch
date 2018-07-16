@@ -13,18 +13,17 @@
 
 			<p><?php echo apply_filters( 'the_content', wp_kses_post( $groups_template->group->description ) ); ?></p>
 
-			<?php if ( $study_id = sc_get_group_study_id() ) : ?>
+			<?php if ( $studies = studychurch()->study::get_group_studies() ) : ?>
 				<hr />
 				<h4><?php _e( 'Study', 'sc' ); ?></h4>
-				<h5 class="no-margin"><a href="<?php echo get_the_permalink( $study_id ); ?>"><?php echo get_the_title( $study_id ); ?></a></h5>
-				<div class="description"><?php echo apply_filters( 'the_excerpt', get_post( $study_id )->post_excerpt ); ?></div>
-			<?php elseif( $study = groups_get_groupmeta( bp_get_group_id(), 'study_name', true ) ) : ?>
-				<hr />
-				<h4><?php _e( 'Study', 'sc' ); ?></h4>
-				<h5><?php echo esc_html( $study ); ?></h5>
-			<?php elseif( sc_user_can_manage_group() ) : ?>
-				<hr />
-				<h4><?php _e( 'Study', 'sc' ); ?></h4>
+
+				<?php foreach ( $studies as $study_id ) : ?>
+					<h5 class="no-margin"><a href="<?php echo studychurch()->study::get_group_link( $study_id ); ?>"><?php echo get_the_title( $study_id ); ?></a></h5>
+					<div class="description"><?php echo apply_filters( 'the_excerpt', get_post( $study_id )->post_excerpt ); ?></div>
+				<?php endforeach; ?>
+			<?php endif; ?>
+
+			<?php if ( sc_user_can_manage_group() ) : ?>
 				<h5><a href="<?php bp_group_admin_permalink(); ?>study/"><?php _e( 'Add a study', 'sc' ); ?></a></h5>
 			<?php endif; ?>
 

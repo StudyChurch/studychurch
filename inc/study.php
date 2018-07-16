@@ -14,6 +14,8 @@ class Study {
 	 */
 	public $actions;
 
+	public $answers;
+
 	/**
 	 * Only make one instance of the Study
 	 *
@@ -31,7 +33,6 @@ class Study {
 	 * Add Hooks and Actions
 	 */
 	protected function __construct() {
-		add_action( 'wp_ajax_sc_save_answer', array( $this, 'save_answer' ) );
 		add_action( 'template_redirect', array( $this, 'setup_study_group' ) );
 		add_action( 'template_redirect', array( $this, 'redirect_on_empty' ) );
 		add_action( 'wp_head', array( $this, 'print_styles' ) );
@@ -45,32 +46,33 @@ class Study {
 		add_action( 'init', array( $this, 'study_cpt' ) );
 
 		// API
-		add_action( 'rest_api_init', 'study_api_init', 0 );
-		add_action( 'init', 'sc_study_extra_api_post_type_arguments', 11 );
+		add_action( 'rest_api_init', array( $this, 'api_init' ), 0 );
+		add_action( 'init', array( $this, 'extra_api_post_type_arguments' ), 11 );
 
 		// Groups
 		add_action( 'bp_init', array( $this, 'register_group_extension' ) );
 
-		$this->actions = Study\Actions::get_instance();
+		$this->actions = Study\Edit::get_instance();
+		$this->answers = Study\Answers::get_instance();
 	}
 
 	public function register_group_extension() {
 		// if we aren't in a group, don't bother
-		if ( ! bp_is_group() ) {
+		if ( ! bp_is_group() || ! bp_is_active( 'groups' ) || ! class_exists( 'BP_Group_Extension' ) ) {
 			return;
 		}
 
 		bp_register_group_extension( 'StudyChurch\Study\Group' );
 	}
 
-	public function study_api_init() {
+	public function api_init() {
 		global $study_api_sc_study;
 
 		$study_api_sc_study = new Study\API();
 		$study_api_sc_study->register_routes();
 	}
 
-	public function sc_study_extra_api_post_type_arguments() {
+	public function extra_api_post_type_arguments() {
 		global $wp_post_types;
 
 		$wp_post_types['sc_study']->show_in_rest          = true;
@@ -106,70 +108,6 @@ class Study {
 	}
 
 	/**
-	 * Save study answers via ajax
-	 */
-	public function save_answer() {
-
-		$user = wp_get_current_user();
-
-		if ( ! $user->exists() ) {
-			wp_send_json_error();
-		}
-
-		$data = array(
-			'comment_post_ID'      => absint( $_POST['post_id'] ),
-			'comment_ID'           => absint( $_POST['comment_id'] ),
-			'comment_author'       => wp_slash( $user->display_name ),
-			'comment_author_email' => wp_slash( $user->user_email ),
-			'comment_author_url'   => wp_slash( $user->user_url ),
-			'comment_content'      => $_POST['answer'],
-			'comment_parent'       => 0,
-			'user_id'              => $user->ID,
-		);
-
-		global $post;
-		$post = get_post( $data['comment_post_ID'] );
-
-		$lesson_id = wp_get_post_parent_id( $data['comment_post_ID'] );
-
-		$activity_meta = array(
-			'action'            => sprintf( __( '%s answered a question in <a href="%s#post-%s">%s</a>' ), $user->display_name, get_permalink( $lesson_id ), $data['comment_post_ID'], get_the_title( $lesson_id ) ),
-			'content'           => wp_filter_kses( $data['comment_content'] ),
-			'component'         => buddypress()->groups->id,
-			'type'              => 'answer_update',
-			'user_id'           => $user->ID,
-			'item_id'           => absint( $_POST['group_id'] ),
-			'recorded_time'     => bp_core_current_time(),
-			'secondary_item_id' => $data['comment_post_ID'],
-			'hide_sitewide'     => false,
-		);
-
-		if ( $data['comment_ID'] ) {
-			wp_update_comment( $data );
-			$activity_meta['id'] = sc_answer_get_activity_id( $data['comment_ID'] );
-		} else {
-			$data['comment_ID'] = wp_new_comment( $data );
-		}
-
-		update_comment_meta( $data['comment_ID'], 'group_id', absint( $_POST['group_id'] ) );
-
-		$this->setup_study_group( $data['comment_post_ID'] );
-
-		if ( ! sc_answer_is_private( $data['comment_post_ID'] ) ) {
-			$activity_id = bp_activity_add( $activity_meta );
-			update_comment_meta( $data['comment_ID'], 'activity_id', $activity_id );
-		}
-
-		ob_start();
-		global $sc_answer;
-		$sc_answer = get_comment( $data['comment_ID'] );
-		get_template_part( 'partials/study-element', 'answers' );
-		$data['answers'] = ob_get_clean();
-
-		wp_send_json_success( $data );
-	}
-
-	/**
 	 * Setup global for current group and redirect if user does not have access to this
 	 * study
 	 */
@@ -184,7 +122,19 @@ class Study {
 			return;
 		}
 
-		if ( ! $group_id = sc_get_study_user_group_id( $study_id ) ) {
+		$group_id = false;
+
+		if ( ! empty( $_REQUEST['sc-group'] ) ) {
+			$group_id = absint( $_REQUEST['sc-group'] );
+
+			if ( empty( $_COOKIE['sc-group'] ) || $group_id != $_COOKIE['sc-group'] ) {
+				@setcookie( 'sc-group', $group_id, time() + MONTH_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, is_ssl() );
+			}
+		} else if ( ! empty( $_COOKIE['sc-group'] ) ) {
+			$group_id = absint( $_COOKIE['sc-group'] );
+		}
+
+		if ( ! $group_id ) {
 
 			// allow editors and up to proceed
 			if ( current_user_can( 'edit_post', $study_id ) ) {
@@ -250,7 +200,7 @@ class Study {
 		}
 
 		// make sure this user has access to this study
-		if ( ! sc_user_can_access_study( absint( $args[2] ), $user->ID ) ) {
+		if ( ! self::user_can_access( absint( $args[2] ), $user->ID ) ) {
 			return $allcaps;
 		}
 
@@ -309,7 +259,7 @@ class Study {
 		return $uri;
 	}
 
-	public function  study_cpt() {
+	public function study_cpt() {
 		$labels = array(
 			'name'               => _x( 'Studies', 'post type general name', 'sc' ),
 			'singular_name'      => _x( 'Study', 'post type singular name', 'sc' ),
@@ -324,21 +274,140 @@ class Study {
 		);
 
 		$args = array(
-			'labels'             => $labels,
-			'public'             => true,
-			'rewrite'            => array(
+			'labels'        => $labels,
+			'public'        => true,
+			'rewrite'       => array(
 				'slug'       => 'studies',
 				'with_front' => false,
 			),
-			'hierarchical'       => true,
-			'has_archive'        => true,
-			'menu_position'      => 5,
-			'menu_icon'          => 'dashicons-welcome-write-blog',
-			'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments', 'page-attributes' )
+			'hierarchical'  => true,
+			'has_archive'   => true,
+			'menu_position' => 5,
+			'menu_icon'     => 'dashicons-welcome-write-blog',
+			'supports'      => array(
+				'title',
+				'editor',
+				'author',
+				'thumbnail',
+				'excerpt',
+				'comments',
+				'page-attributes'
+			)
 		);
 
 		register_post_type( 'sc_study', $args );
+
+		register_taxonomy( 'sc_category', 'sc_study', array(
+			'hierarchical' => true,
+		) );
+
 	}
 
+	/** Study Helper Functions */
+
+	/**
+	 * @param null $group_id
+	 *
+	 * @return array
+	 * @author Tanner Moushey
+	 */
+	public static function get_group_studies( $group_id = null ) {
+		if ( ! $group_id ) {
+			$group_id = bp_get_current_group_id();
+		}
+
+		return (array) groups_get_groupmeta( $group_id, '_sc_study', true );
+	}
+
+	/**
+	 * Customize Study link to include group parameter for study answers
+	 *
+	 * @param      $study_id
+	 * @param null $group_id
+	 *
+	 * @return string
+	 * @author Tanner Moushey
+	 */
+	public static function get_group_link( $study_id, $group_id = null ) {
+		if ( ! $group_id ) {
+			$group_id = bp_get_current_group_id();
+		}
+
+		$study_id = self::get_study_id( $study_id );
+
+		return add_query_arg( 'sc-group', $group_id, get_permalink( $study_id ) );
+	}
+
+	/**
+	 * Get the top level id for this study
+	 *
+	 * @param null $id
+	 *
+	 * @return bool|int|mixed|null
+	 */
+	public static function get_study_id( $id = null ) {
+
+		if ( ! $id ) {
+			$id = get_the_ID();
+		}
+
+		if ( $parent_id = get_post_meta( $id, '_sc_study_id', true ) ) {
+			return $parent_id;
+		}
+
+		$this_id = $id;
+
+		// keep getting parents until there are no more to get.
+		while ( $parent_id = wp_get_post_parent_id( $id ) ) {
+			$id = $parent_id;
+		}
+
+		// cache results
+		update_post_meta( $this_id, '_sc_study_id', $id );
+
+		return $id;
+	}
+
+	/**
+	 * Can the user access this study?
+	 *
+	 * @param null $study_id
+	 * @param null $user_id
+	 *
+	 * @return bool
+	 */
+	public static function user_can_access( $study_id = null, $user_id = null ) {
+		if ( ! $study_id ) {
+			$study_id = get_the_ID();
+		}
+
+		$study_id = sc_get_study_id( $study_id );
+
+		if ( ! $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		if ( empty( $study_id ) || empty( $user_id ) ) {
+			return false;
+		}
+
+		if ( $study_access = get_user_meta( $user_id, '_studies', true ) ) {
+			if ( ! empty( $study_access[ $study_id ] ) ) {
+				return true;
+			}
+		} else {
+			$study_access = array();
+		}
+
+		foreach ( groups_get_groups( 'show_hidden=true&user_id=' . $user_id )['groups'] as $group ) {
+			if ( in_array( $study_id, studychurch()->study::get_group_studies( $group->id ) ) ) {
+				$study_access[] = $study_id;
+				update_user_meta( $user_id, '_studies', $study_access );
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 }

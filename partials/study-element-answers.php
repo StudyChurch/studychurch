@@ -5,7 +5,7 @@ if ( empty( $sc_answer ) ) {
 }
 
 $activity_args = array(
-	'primary_id'   => sc_get_study_user_group_id( $sc_answer->comment_post_ID ),
+	'primary_id'   => get_comment_meta( $sc_answer->comment_ID, 'group_id', true ),
 	'secondary_id' => $sc_answer->comment_post_ID,
 	'action'       => 'answer_update',
 	'exclude'      => sc_answer_get_activity_id( $sc_answer->comment_ID )

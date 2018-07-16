@@ -68,13 +68,12 @@ get_header(); ?>
 					<h2><?php _e( 'Assignments', 'sc' ); ?></h2>
 
 					<?php foreach ( $groups['groups'] as $group_id ) : $group = groups_get_group( 'group_id=' . $group_id ); ?>
-						<?php $assignments = new SC_Assignments_Query( array( 'count' => 1, 'group_id' => $group_id ) ); ?>
+						<?php $assignments = new StudyChurch\Assignments\Query( array( 'count' => 1, 'group_id' => $group_id ) ); ?>
 						<?php if ( $assignments->have_assignments() ) : $assignments->the_assignment(); ?>
-							<h4><?php _e( 'Assignment Due: ', 'sc' ); ?><?php $assignments->the_date_formatted(); ?></h4>
+							<h4><?php _e( 'Due on: ', 'sc' ); ?><?php $assignments->the_date_formatted(); ?></h4>
 							<?php $assignments->the_content();
 							?>
 							<p class="text-right small">
-								<a href="<?php echo get_the_permalink( sc_get_group_study_id( $group_id ) ); ?>"><?php echo get_the_title( sc_get_group_study_id( $group_id ) ); ?></a> |
 								<a href="<?php bp_group_permalink( $group ); ?>"><?php bp_group_name( $group ); ?></a>
 							</p>
 						<?php endif; ?>

@@ -1,6 +1,6 @@
 <?php
-$assignments     = new SC_Assignments_Query();
-$old_assignments = new SC_Assignments_Query( array(
+$assignments     = new StudyChurch\Assignments\Query();
+$old_assignments = new StudyChurch\Assignments\Query( array(
 	'date_start' => date( DATE_RSS, 0 ),
 	'date_finish' => date( DATE_RSS, time() )
 ) );
@@ -22,7 +22,7 @@ if ( $assignments->have_assignments() ) : ?>
 					<a href="#" onclick="if (window.confirm('Are you sure you want to delete this assignment?')) { jQuery(this).parent().submit(); } return false;"><i class="fa fa-trash"></i></a>
 				</form>
 			<?php endif; ?>
-			<h4><?php _e( 'Assignment Due: ', 'sc' ); ?><?php $assignments->the_date_formatted(); ?></h4>
+			<h4><?php _e( 'Due on: ', 'sc' ); ?><?php $assignments->the_date_formatted(); ?></h4>
 			<?php $assignments->the_lessons(); ?>
 			<?php $assignments->the_content(); ?>
 		</div>
@@ -36,7 +36,7 @@ if ( $assignments->have_assignments() ) : ?>
 <?php if ( $old_assignments->have_assignments() ) : ?>
 	<hr />
 
-	<h4><?php _e( 'Old Assignments', 'sc' ); ?></h4>
+	<h4><?php _e( 'Old Todos', 'sc' ); ?></h4>
 
 	<?php while ( $old_assignments->the_assignment() ) : ?>
 		<div class="panel">
@@ -47,7 +47,7 @@ if ( $assignments->have_assignments() ) : ?>
 					<a href="#" onclick="if (window.confirm('Are you sure you want to delete this assignment?')) { jQuery(this).parent().submit(); } return false;"><i class="fa fa-trash"></i></a>
 				</form>
 			<?php endif; ?>
-			<h4><?php _e( 'Assignment Due: ', 'sc' ); ?><?php $old_assignments->the_date_formatted(); ?></h4>
+			<h4><?php _e( 'Due on: ', 'sc' ); ?><?php $old_assignments->the_date_formatted(); ?></h4>
 			<?php $old_assignments->the_lessons(); ?>
 			<?php $old_assignments->the_content(); ?>
 		</div>
