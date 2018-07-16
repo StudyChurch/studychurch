@@ -7,7 +7,7 @@ $studies = get_pages( 'post_status=publish,pending,draft&post_type=sc_study&pare
 <?php if ( $groups['total'] ) : ?>
 	<div class="panel">
 
-		<h2><?php _e( 'Your Todos', 'sc' ); ?></h2>
+		<h2><?php _e( 'Your To Dos', 'sc' ); ?></h2>
 
 		<?php foreach ( $groups['groups'] as $group_id ) : $group = groups_get_group( 'group_id=' . $group_id ); ?>
 			<?php $assignments = new StudyChurch\Assignments\Query( array( 'count' => 1, 'group_id' => $group_id ) ); ?>
@@ -21,7 +21,7 @@ $studies = get_pages( 'post_status=publish,pending,draft&post_type=sc_study&pare
 		<?php endforeach; ?>
 
 		<?php if ( ! $has_assignments ) : ?>
-			<p><?php _e( 'No todos yet', 'sc' ); ?></p>
+			<p><?php _e( 'No to dos yet', 'sc' ); ?></p>
 		<?php endif; ?>
 
 	</div>

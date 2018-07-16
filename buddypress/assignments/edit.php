@@ -36,7 +36,7 @@ if ( $assignments->have_assignments() ) : ?>
 <?php if ( $old_assignments->have_assignments() ) : ?>
 	<hr />
 
-	<h4><?php _e( 'Old Todos', 'sc' ); ?></h4>
+	<h4><?php _e( 'Old To Dos', 'sc' ); ?></h4>
 
 	<?php while ( $old_assignments->the_assignment() ) : ?>
 		<div class="panel">

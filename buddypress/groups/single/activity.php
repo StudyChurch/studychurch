@@ -5,9 +5,9 @@ $assignments = new StudyChurch\Assignments\Query( array( 'count' => 1 ) );
 <div class="panel">
 
 	<?php if ( sc_user_can_manage_group() ) : ?>
-		<a href="<?php sc_the_assignment_permalink(); ?>" class="alignright ucase small"><?php _e( 'Manage todos', 'sc' ); ?></a>
+		<a href="<?php sc_the_assignment_permalink(); ?>" class="alignright ucase small"><?php _e( 'Manage to dos', 'sc' ); ?></a>
 	<?php else: ?>
-		<a href="<?php sc_the_assignment_permalink(); ?>" class="alignright ucase small"><?php _e( 'See all todos', 'sc' ); ?></a>
+		<a href="<?php sc_the_assignment_permalink(); ?>" class="alignright ucase small"><?php _e( 'See all to dos', 'sc' ); ?></a>
 	<?php endif; ?>
 
 	<?php if ( $assignments->have_assignments() ) : ?>
@@ -18,7 +18,7 @@ $assignments = new StudyChurch\Assignments\Query( array( 'count' => 1 ) );
 		<?php endwhile; ?>
 	<?php else : ?>
 		<p>
-			<?php esc_html_e( 'There are no todos for this group.', 'sc' ); ?>
+			<?php esc_html_e( 'There are no to dos for this group.', 'sc' ); ?>
 		</p>
 		<?php if ( sc_user_can_manage_group() ) : ?>
 			<a href="#" data-reveal-id="create-assignment" class="small ucase"><i class="fa fa-plus-circle"></i> <?php _e( 'Add an todo', 'sc' ); ?></a>
