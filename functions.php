@@ -13,7 +13,7 @@
  */
 
 // Useful global constants
-define( 'SC_VERSION', '0.1.5.1' );
+define( 'SC_VERSION', '0.2.0' );
 define( 'BP_DEFAULT_COMPONENT', 'profile' );
 
 require_once( get_template_directory() . '/vendor/autoload.php' );
