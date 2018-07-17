@@ -4,6 +4,8 @@
  * Template Name: Study Manage
  */
 
+use StudyChurch\Study\Edit;
+
 $action       = sc_get( 'action', 'edit' );
 $study_id     = absint( sc_get( 'study', 0 ) );
 $item_id      = absint( sc_get( 'item', $study_id ) );
@@ -21,7 +23,7 @@ get_header(); ?>
 
 		<?php do_action( 'sc_study_edit_messages', $study_id ); ?>
 
-		<?php if ( studychurch()->study->actions::step_has_sidebar() ) : ?>
+		<?php if ( Edit::step_has_sidebar() ) : ?>
 			<div id="secondary" class="widget-area medium-4 small-12 columns" role="complementary">
 
 				<?php do_action( 'sc_study_edit_sidebar_before', $study_id ); ?>
@@ -46,8 +48,8 @@ get_header(); ?>
 			<!-- #secondary large-3-->
 		<?php endif; ?>
 
-		<div class="medium-8 column <?php echo ( ! studychurch()->study->actions::step_has_sidebar() ) ? 'small-centered' : ''; ?>" role="main">
-			<?php get_template_part( 'partials/study-edit', studychurch()->study->actions::get_current_step( $study_id ) ); ?>
+		<div class="medium-8 column <?php echo ( ! Edit::step_has_sidebar() ) ? 'small-centered' : ''; ?>" role="main">
+			<?php get_template_part( 'partials/study-edit', Edit::get_current_step( $study_id ) ); ?>
 		</div>
 	</div>
 <?php get_footer(); ?>
