@@ -50,6 +50,11 @@ class Setup {
 	protected function add_includes() {
 
 		/**
+		 * Instantiate customizer
+		 */
+		Settings::get_instance();
+
+		/**
 		 * Customizer additions.
 		 */
 		require get_template_directory() . '/inc/customizer.php';
@@ -94,6 +99,7 @@ class Setup {
 		 * Initialize Assignments Component
 		 */
 		$this->assignments = Assignments::get_instance();
+
 	}
 
 	protected function sc_includes() {
@@ -427,34 +433,34 @@ class Setup {
 
 	public function js_globals() {
 
-		if ( $id = sc_get( 'study' ) ) {
-
-			// important variables that will be used throughout this example
-			$bucket   = 'studychurch';
-			$region   = 's3';
-			$keyStart = 'studies/' . sanitize_title( get_the_title( $id ) ) . '/';
-			$acl      = 'public-read';
-
-			// these can be found on your Account page, under Security Credentials > Access Keys
-			$accessKeyId = 'AKIAJNR25AFKFR5VHPJA';
-			$secret      = 'jgJT1Qd+LfSa2UKQA/JO16o5dQs3HqE8p2IuBTdY';
-
-			$policy = base64_encode( json_encode( array(
-				// ISO 8601 - date('c'); generates uncompatible date, so better do it manually
-				'expiration' => date( 'Y-m-d\TH:i:s.000\Z', strtotime( '+1 day' ) ),
-				'conditions' => array(
-					array( 'bucket' => $bucket ),
-					array( 'acl' => $acl ),
-					array( 'success_action_status' => '201' ),
-					array( 'x-requested-with' => 'xhr' ),
-					array( 'starts-with', '$key', $keyStart ),
-					array( 'starts-with', '$Content-Type', '' ) // accept all files
-				)
-			) ) );
-
-			$signature = base64_encode( hash_hmac( 'sha1', $policy, $secret, true ) );
-
+		if ( ! $id = sc_get( 'study' ) ) {
+			return;
 		}
+
+		// important variables that will be used throughout this example
+		$bucket   = Settings::get( 'aws_bucket' );
+		$region   = 's3';
+		$keyStart = Settings::get( 'aws_directory', 'studies' ) . '/' . sanitize_title( get_the_title( $id ) ) . '/';
+		$acl      = 'public-read';
+
+		// these can be found on your Account page, under Security Credentials > Access Keys
+		$accessKeyId = Settings::get( 'aws_access_key' );
+		$secret      = Settings::get( 'aws_access_key_secret' );
+
+		$policy = base64_encode( json_encode( array(
+			// ISO 8601 - date('c'); generates uncompatible date, so better do it manually
+			'expiration' => date( 'Y-m-d\TH:i:s.000\Z', strtotime( '+1 day' ) ),
+			'conditions' => array(
+				array( 'bucket' => $bucket ),
+				array( 'acl' => $acl ),
+				array( 'success_action_status' => '201' ),
+				array( 'x-requested-with' => 'xhr' ),
+				array( 'starts-with', '$key', $keyStart ),
+				array( 'starts-with', '$Content-Type', '' ) // accept all files
+			)
+		) ) );
+
+		$signature = base64_encode( hash_hmac( 'sha1', $policy, $secret, true ) );
 
 		$key = ( $this->is_dev() ) ? 'ntB-13C-11nroeB-22B-16syB1wqc==' : 'gsuwgH-7fnrzE5ic==';
 		$key = apply_filters( 'sc_froala_key', $key ); ?>
@@ -721,5 +727,44 @@ class Setup {
 		return 'upload_files,edit_published_posts';
 	}
 
+	/**
+	 * ID for this theme. Used in translation functions.
+	 *
+	 * @return string
+	 * @author Tanner Moushey
+	 */
+	public function get_id() {
+		return 'studychurch';
+	}
+
+	/**
+	 * Get the name for this theme
+	 *
+	 * @return string
+	 * @author Tanner Moushey
+	 */
+	public function get_name() {
+		return 'StudyChurch';
+	}
+
+	/**
+	 * Alias for get_name
+	 *
+	 * @return string
+	 * @author Tanner Moushey
+	 */
+	public function get_plugin_name() {
+		return $this->get_name();
+	}
+
+	/**
+	 * Get the version for this theme
+	 *
+	 * @return string
+	 * @author Tanner Moushey
+	 */
+	public function get_version() {
+		return SC_VERSION;
+	}
 
 }

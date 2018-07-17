@@ -112,6 +112,7 @@ class Study {
 	 * study
 	 */
 	public function setup_study_group( $study_id = false ) {
+
 		if ( empty( $study_id ) && ! is_singular( 'sc_study' ) ) {
 			return;
 		}

@@ -10,6 +10,7 @@ class ComposerStaticInit1d748d33dcb87897c6d2d890673c7280
         'S' => 
         array (
             'StudyChurch\\' => 12,
+            'SkillfulPlugins\\' => 16,
         ),
     );
 
@@ -17,6 +18,10 @@ class ComposerStaticInit1d748d33dcb87897c6d2d890673c7280
         'StudyChurch\\' => 
         array (
             0 => __DIR__ . '/../..' . '/inc',
+        ),
+        'SkillfulPlugins\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/skillfulplugins/toolbox',
         ),
     );
 

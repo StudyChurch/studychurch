@@ -7,4 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'StudyChurch\\' => array($baseDir . '/inc'),
+    'SkillfulPlugins\\' => array($vendorDir . '/skillfulplugins/toolbox'),
 );

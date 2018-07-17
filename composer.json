@@ -8,6 +8,9 @@
       "email": "tanner@iwitnessdesign.com"
     }
   ],
+  "require": {
+    "skillfulplugins/toolbox": "*"
+  },
   "autoload": {
     "psr-4": {
       "StudyChurch\\": "inc/"

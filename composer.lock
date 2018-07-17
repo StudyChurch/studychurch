@@ -1,0 +1,48 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "5fbd7b2943e337443168b031aca0a04d",
+    "packages": [
+        {
+            "name": "skillfulplugins/toolbox",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/skillfulplugins/toolbox.git",
+                "reference": "300fbb783ca09c44e8043063d9d7dd44afe90796"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/skillfulplugins/toolbox/zipball/300fbb783ca09c44e8043063d9d7dd44afe90796",
+                "reference": "300fbb783ca09c44e8043063d9d7dd44afe90796",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SkillfulPlugins\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0"
+            ],
+            "description": "Common utility and helper functions.",
+            "time": "2017-07-01T18:23:35+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}
