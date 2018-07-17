@@ -2,6 +2,11 @@
 
 namespace StudyChurch\Study;
 
+use WP_REST_Posts_Controller;
+use WP_REST_Server;
+use WP_Error;
+use WP_Query;
+
 class API extends WP_REST_Posts_Controller {
 	protected $base = 'study';
 	protected $post_type = 'sc_study';
