@@ -2,7 +2,7 @@
 $assignments     = new StudyChurch\Assignments\Query();
 $old_assignments = new StudyChurch\Assignments\Query( array(
 	'date_start' => date( DATE_RSS, 0 ),
-	'date_finish' => date( DATE_RSS, time() )
+	'date_finish' => date( DATE_RSS, current_time( 'timestamp' ) )
 ) );
 ?>
 

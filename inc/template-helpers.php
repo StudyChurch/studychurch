@@ -509,10 +509,11 @@ function sc_get_group_assignment( $id ) {
  *
  * @param $assignment
  * @param $group_id
+ * @param $disable_reminders
  *
  * @return bool|int
  */
-function sc_add_group_assignment( $assignment, $group_id ) {
+function sc_add_group_assignment( $assignment, $group_id, $disable_reminders = false ) {
 
 	if ( ( empty( $assignment['content'] ) && empty( $assignment['lessons'] ) ) || empty( $assignment['date'] ) ) {
 		return false;
@@ -522,7 +523,7 @@ function sc_add_group_assignment( $assignment, $group_id ) {
 		$timezone = 'America/Los_Angeles';
 	}
 
-	$date = new DateTime( $assignment['date'] . '23:59:59', new DateTimeZone( $timezone ) );
+	$date = new DateTime( $assignment['date'] . ' 23:59:59', new DateTimeZone( $timezone ) );
 
 	$assignment['id'] = wp_insert_post( array(
 		'post_author'  => get_current_user_id(),
@@ -541,6 +542,10 @@ function sc_add_group_assignment( $assignment, $group_id ) {
 
 	if ( ! empty( $assignment['lessons'] ) ) {
 		update_post_meta( $assignment['id'], 'lessons', array_map( 'absint', (array) $assignment['lessons'] ) );
+	}
+
+	if ( $disable_reminders ) {
+		update_post_meta( $assignment['id'], 'disable_reminders', true );
 	}
 
 	do_action( 'sc_assignment_create', $assignment, $group_id );

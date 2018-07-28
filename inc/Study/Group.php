@@ -157,26 +157,17 @@ class Group extends \BP_Group_Extension {
 			$group_id = bp_get_current_group_id();
 		}
 
-		$settings = array(
-			'_sc_group_activate' => 0,
-			'_sc_study'          => '',
-		);
-
-		if ( ! empty( $_POST['_sc_group_activate'] ) ) {
-			$settings['_sc_group_activate'] = absint( $_POST['_sc_group_activate'] );
-		}
+		$studies = array();
 
 		if ( ! empty( $_POST['_sc_study'] ) ) {
-			$settings['_sc_study'] = array_map( 'absint', $_POST['_sc_study'] );
+			$studies = array_map( 'absint', $_POST['_sc_study'] );
 		}
 
-		// Save group settings
-		foreach ( $settings as $meta_key => $meta_value ) {
-			groups_update_groupmeta( $group_id, $meta_key, $meta_value );
-		}
+		groups_update_groupmeta( $group_id, '_sc_study', $studies );
+
+		do_action( 'sc_group_study_update', $group_id, $studies );
 
 		if ( bp_is_group_admin_page() || is_admin() ) {
-
 			// Only redirect on Manage screen
 			if ( bp_is_group_admin_page() ) {
 				bp_core_add_message( __( 'Settings saved successfully', 'sc' ) );

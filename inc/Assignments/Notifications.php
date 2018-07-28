@@ -2,6 +2,9 @@
 
 namespace StudyChurch\Assignments;
 
+use DateTime;
+use DateTimeZone;
+
 class Notifications {
 
 	/**
@@ -139,6 +142,12 @@ class Notifications {
 	}
 
 	protected function send_reminder( $assignment, $args ) {
+
+		// make sure reminders are not disabled for this assignment
+		if ( get_post_meta( $assignment->ID, 'disable_reminders', true ) ) {
+			return;
+		}
+
 		remove_filter( 'the_content', 'rcp_filter_restricted_content', 100 );
 
 		$group_id = get_the_terms( $assignment->ID, 'sc_group' );

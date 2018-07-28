@@ -44,7 +44,7 @@ class Query {
 	public function parse_query() {
 
 		// remove legacy assignments
-		if ( $assignments = groups_get_groupmeta( $this->query_args['group_id'], Query::$_key, true ) ) {
+ 		if ( $assignments = groups_get_groupmeta( $this->query_args['group_id'], Query::$_key, true ) ) {
 			remove_action( 'sc_assignment_create', array(
 				Notifications::get_instance(),
 				'new_assignment'
