@@ -25,6 +25,11 @@ class Setup {
 	public $study;
 
 	/**
+	 * @var API
+	 */
+	public $api;
+
+	/**
 	 * Only make one instance of the Setup
 	 *
 	 * @return Setup
@@ -99,6 +104,11 @@ class Setup {
 		 * Initialize Assignments Component
 		 */
 		$this->assignments = Assignments::get_instance();
+
+		/**
+		 * Initialize API
+		 */
+		$this->api = API::get_instance();
 
 	}
 
@@ -767,4 +777,27 @@ class Setup {
 		return SC_VERSION;
 	}
 
+	/**
+	 * Get the url for this theme directory
+	 *
+	 * @return string
+	 * @author Tanner Moushey
+	 */
+	public function theme_url() {
+		return get_template_directory_uri();
+	}
+
+	public function plugin_url() {
+		return $this->theme_url();
+	}
+
+	/**
+	 * Get the API namespace to use
+	 *
+	 * @return string
+	 * @author Tanner Moushey
+	 */
+	public function get_api_namespace() {
+		return $this->get_id() . '/v1';
+	}
 }

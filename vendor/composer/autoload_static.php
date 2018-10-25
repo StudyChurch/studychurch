@@ -12,6 +12,10 @@ class ComposerStaticInit1d748d33dcb87897c6d2d890673c7280
             'StudyChurch\\' => 12,
             'SkillfulPlugins\\' => 16,
         ),
+        'F' => 
+        array (
+            'Firebase\\JWT\\' => 13,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -22,6 +26,10 @@ class ComposerStaticInit1d748d33dcb87897c6d2d890673c7280
         'SkillfulPlugins\\' => 
         array (
             0 => __DIR__ . '/..' . '/skillfulplugins/toolbox',
+        ),
+        'Firebase\\JWT\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
     );
 

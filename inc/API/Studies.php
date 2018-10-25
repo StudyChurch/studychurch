@@ -1,25 +1,27 @@
 <?php
 
-namespace StudyChurch\Study;
+namespace StudyChurch\API;
 
 use WP_REST_Posts_Controller;
 use WP_REST_Server;
 use WP_Error;
 use WP_Query;
 
-class API extends WP_REST_Posts_Controller {
-	protected $base = 'study';
+class Studies extends WP_REST_Posts_Controller {
 	protected $post_type = 'sc_study';
 
 	public function __construct() {
 		parent::__construct( $this->post_type );
+
+		$this->namespace = studychurch()->get_api_namespace();
+		$this->base = 'studies';
 
 		add_action( 'before_delete_post', array( $this, 'delete_chapter_items' ) );
 	}
 
 	public function register_routes() {
 
-		$base = $this->rest_base; // $this->get_post_type_base( $this->post_type );
+		parent::register_routes();
 
 		register_rest_field( 'sc_study', 'data_type', array(
 			'update_callback' => array( $this, 'save_data_type' ),
@@ -46,11 +48,12 @@ class API extends WP_REST_Posts_Controller {
 			'filter'                => array(),
 		);
 
-		register_rest_route( 'study', '(?P<study_id>\d+)/chapters', array(
+		register_rest_route( $this->namespace, $this->base . '/(?P<study_id>\d+)/chapters', array(
 			array(
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'get_chapters' ),
 				'args'     => $posts_args,
+				'permission_callback' => array( $this, 'get_item_permissions_check' ),
 			),
 			array(
 				'methods'  => WP_REST_Server::CREATABLE,
@@ -59,7 +62,7 @@ class API extends WP_REST_Posts_Controller {
 			),
 		) );
 
-		register_rest_route( $this->base, '(?P<study_id>\d+)/chapters/(?P<id>\d+)', array(
+		register_rest_route( $this->namespace, $this->base . '/(?P<study_id>\d+)/chapters/(?P<id>\d+)', array(
 			array(
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'get_chapter' ),
@@ -84,11 +87,12 @@ class API extends WP_REST_Posts_Controller {
 			),
 		) );
 
-		register_rest_route( 'study', '(?P<study_id>\d+)/chapters/(?P<chapter_id>\d+)/items', array(
+		register_rest_route( $this->namespace, $this->base . '/(?P<study_id>\d+)/chapters/(?P<chapter_id>\d+)/items', array(
 			array(
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'get_chapter_items' ),
 				'args'     => $posts_args,
+				'permission_callback' => array( $this, 'get_item_permissions_check' ),
 			),
 			array(
 				'methods'  => WP_REST_Server::CREATABLE,
@@ -97,7 +101,7 @@ class API extends WP_REST_Posts_Controller {
 			),
 		) );
 
-		register_rest_route( $this->base, '(?P<study_id>\d+)/chapters/(?P<chapter_id>\d+)/items/(?P<id>\d+)', array(
+		register_rest_route( $this->namespace, $this->base . '/(?P<study_id>\d+)/chapters/(?P<chapter_id>\d+)/items/(?P<id>\d+)', array(
 			array(
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'get_chapter_item' ),
@@ -400,4 +404,17 @@ class API extends WP_REST_Posts_Controller {
 		return sc_answer_is_private( $object['id'] );
 	}
 
+	/**
+	 * Customize the collection parameters
+	 *
+	 * @return array
+	 * @author Tanner Moushey
+	 */
+	public function get_collection_params() {
+		$query_params = parent::get_collection_params();
+
+		$query_params['parent']['default'] = 0;
+
+		return $query_params;
+	}
 }

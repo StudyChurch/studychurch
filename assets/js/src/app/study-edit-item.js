@@ -67,7 +67,7 @@ var StudyApp = StudyApp || {};
 		model: StudyApp.Models.Item,
 
 		url: function () {
-			return wpApiSettings.root + 'study/' + StudyApp.study_id + '/chapters/' + StudyApp.CurrentChapter.model.get('id') + '/items/';
+			return wpApiSettings.root + 'studychurch/v1/studies/' + StudyApp.study_id + '/chapters/' + StudyApp.CurrentChapter.model.get('id') + '/items/';
 		},
 
 		nextOrder: function () {

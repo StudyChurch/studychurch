@@ -8,4 +8,5 @@ $baseDir = dirname($vendorDir);
 return array(
     'StudyChurch\\' => array($baseDir . '/inc'),
     'SkillfulPlugins\\' => array($vendorDir . '/skillfulplugins/toolbox'),
+    'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
 );

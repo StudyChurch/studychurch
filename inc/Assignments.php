@@ -47,7 +47,10 @@ class Assignments {
 	}
 
 	public function ass_cpt() {
-		register_post_type( 'sc_assignment' );
+		register_post_type( 'sc_assignment', array(
+			'show_in_rest' => true,
+		    'rest_controller_class' => 'StudyChurch\API\Assignments'
+		) );
 		register_taxonomy( 'sc_group', 'sc_assignment', array(
 			'public' => false,
 		) );

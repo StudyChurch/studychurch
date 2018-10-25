@@ -202,10 +202,10 @@ class Query {
 		$group = wp_get_post_terms( $this->assignment->ID, 'sc_group' );
 
 		if ( empty( $group[0]->slug ) ) {
-			return;
+			return false;
 		}
 
-		return absint( $group[0]->slug );;
+		return absint( $group[0]->slug );
 	}
 
 	/**
@@ -215,7 +215,7 @@ class Query {
 	 */
 	public function get_the_lessons() {
 		if ( ! $lessons = get_post_meta( $this->assignment->ID, 'lessons', true ) ) {
-			return false;
+			return array();
 		}
 
 		return array_map( 'absint', $lessons );

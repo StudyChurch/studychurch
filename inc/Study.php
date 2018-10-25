@@ -45,10 +45,6 @@ class Study {
 		// CPT
 		add_action( 'init', array( $this, 'study_cpt' ) );
 
-		// API
-		add_action( 'rest_api_init', array( $this, 'api_init' ), 0 );
-		add_action( 'init', array( $this, 'extra_api_post_type_arguments' ), 11 );
-
 		// Groups
 		add_action( 'bp_init', array( $this, 'register_group_extension' ) );
 
@@ -63,21 +59,6 @@ class Study {
 		}
 
 		bp_register_group_extension( 'StudyChurch\Study\Group' );
-	}
-
-	public function api_init() {
-		global $study_api_sc_study;
-
-		$study_api_sc_study = new Study\API();
-		$study_api_sc_study->register_routes();
-	}
-
-	public function extra_api_post_type_arguments() {
-		global $wp_post_types;
-
-		$wp_post_types['sc_study']->show_in_rest          = true;
-		$wp_post_types['sc_study']->rest_base             = 'study';
-		$wp_post_types['sc_study']->rest_controller_class = 'WP_REST_Posts_Controller';
 	}
 
 	/**
@@ -285,6 +266,9 @@ class Study {
 			'has_archive'   => true,
 			'menu_position' => 5,
 			'menu_icon'     => 'dashicons-welcome-write-blog',
+			'show_in_rest'  => true,
+			'rest_base'     => 'studies',
+			'rest_controller_class' => '\StudyChurch\API\Studies',
 			'supports'      => array(
 				'title',
 				'editor',

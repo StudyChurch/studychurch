@@ -417,7 +417,7 @@ var StudyApp = StudyApp || {};
 			if ( this.collection ) {
 				return this.collection.url()
 			} else {
-				return wpApiSettings.root + 'study/' + StudyApp.study_id + '/chapters/'
+				return wpApiSettings.root + 'studychurch/v1/studies/' + StudyApp.study_id + '/chapters/'
 			}
 		},
 
@@ -472,7 +472,7 @@ var StudyApp = StudyApp || {};
 		model: StudyApp.Models.Chapter,
 
 		url: function () {
-			return wpApiSettings.root + 'study/' + StudyApp.study_id + '/chapters/'
+			return wpApiSettings.root + 'studychurch/v1/studies/' + StudyApp.study_id + '/chapters/'
 		},
 
 		parse: function (response) {
@@ -706,7 +706,7 @@ var StudyApp = StudyApp || {};
 		model: StudyApp.Models.Item,
 
 		url: function () {
-			return wpApiSettings.root + 'study/' + StudyApp.study_id + '/chapters/' + StudyApp.CurrentChapter.model.get('id') + '/items/';
+			return wpApiSettings.root + 'studychurch/v1/studies/' + StudyApp.study_id + '/chapters/' + StudyApp.CurrentChapter.model.get('id') + '/items/';
 		},
 
 		nextOrder: function () {
