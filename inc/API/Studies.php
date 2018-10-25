@@ -53,7 +53,7 @@ class Studies extends WP_REST_Posts_Controller {
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'get_chapters' ),
 				'args'     => $posts_args,
-				'permission_callback' => array( $this, 'get_item_permissions_check' ),
+//				'permission_callback' => array( $this, 'get_item_permissions_check' ),
 			),
 			array(
 				'methods'  => WP_REST_Server::CREATABLE,
@@ -67,7 +67,7 @@ class Studies extends WP_REST_Posts_Controller {
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'get_chapter' ),
 				'args'     => $posts_args,
-				'permission_callback' => array( $this, 'get_item_permissions_check' ),
+//				'permission_callback' => array( $this, 'get_item_permissions_check' ),
 			),
 			array(
 				'methods'         => WP_REST_Server::EDITABLE,
