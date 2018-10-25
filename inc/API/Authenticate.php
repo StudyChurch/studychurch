@@ -105,7 +105,7 @@ class Authenticate extends WP_REST_Controller {
 		) );
 
 		$studies = $this->do_rest_request( '/studychurch/v1/studies', array(
-			'post_status' => 'publish,pending,draft',
+			'post_status' => 'publish,pending,draft,private',
 			'per_page'    => 100,
 			'orderby'     => 'title',
 			'order'       => 'asc',
