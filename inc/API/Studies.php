@@ -134,11 +134,11 @@ class Studies extends WP_REST_Posts_Controller {
 		$chapter_id = $args['id'];
 		$study_id = $study_slug = $args['study_id'];
 
-		if ( is_int( $study_slug ) ) {
+		if ( is_numeric( $study_slug ) ) {
 			$study_slug = get_post( $study_id )->post_name;
 		}
 
-		if ( ! is_int( $chapter_id ) ) {
+		if ( ! is_numeric( $chapter_id ) ) {
 			$chapter_id = get_page_by_path( $study_slug. '/' . $chapter_id, OBJECT, 'sc_study' )->ID;
 		}
 
@@ -233,7 +233,7 @@ class Studies extends WP_REST_Posts_Controller {
 		$args = (array) $request->get_params();
 		$study_id = $args['study_id'];
 
-		if ( ! is_int( $study_id ) ) {
+		if ( ! is_numeric( $study_id ) ) {
 			$study_id = get_page_by_path( $study_id, OBJECT, 'sc_study' )->ID;
 		}
 
