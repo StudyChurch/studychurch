@@ -48,7 +48,7 @@ class Studies extends WP_REST_Posts_Controller {
 			'filter'                => array(),
 		);
 
-		register_rest_route( $this->namespace, $this->base . '/(?P<study_id>\d+)/chapters', array(
+		register_rest_route( $this->namespace, $this->base . '/(?P<study_id>[a-zA-Z0-9-]+)/chapters', array(
 			array(
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'get_chapters' ),
@@ -62,7 +62,7 @@ class Studies extends WP_REST_Posts_Controller {
 			),
 		) );
 
-		register_rest_route( $this->namespace, $this->base . '/(?P<study_id>\d+)/chapters/(?P<id>\d+)', array(
+		register_rest_route( $this->namespace, $this->base . '/(?P<study_id>[a-zA-Z0-9-]+)/chapters/(?P<id>[a-zA-Z0-9-]+)', array(
 			array(
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'get_chapter' ),
@@ -87,7 +87,7 @@ class Studies extends WP_REST_Posts_Controller {
 			),
 		) );
 
-		register_rest_route( $this->namespace, $this->base . '/(?P<study_id>\d+)/chapters/(?P<chapter_id>\d+)/items', array(
+		register_rest_route( $this->namespace, $this->base . '/(?P<study_id>[a-zA-Z0-9-]+)/chapters/(?P<chapter_id>[a-zA-Z0-9-]+)/items', array(
 			array(
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'get_chapter_items' ),
@@ -101,7 +101,7 @@ class Studies extends WP_REST_Posts_Controller {
 			),
 		) );
 
-		register_rest_route( $this->namespace, $this->base . '/(?P<study_id>\d+)/chapters/(?P<chapter_id>\d+)/items/(?P<id>\d+)', array(
+		register_rest_route( $this->namespace, $this->base . '/(?P<study_id>[a-zA-Z0-9-]+)/chapters/(?P<chapter_id>[a-zA-Z0-9-]+)/items/(?P<id>\d+)', array(
 			array(
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'get_chapter_item' ),
@@ -132,6 +132,16 @@ class Studies extends WP_REST_Posts_Controller {
 
 		$args = (array) $request->get_params();
 		$chapter_id = $args['id'];
+		$study_id = $study_slug = $args['study_id'];
+
+		if ( is_int( $study_slug ) ) {
+			$study_slug = get_post( $study_id )->post_name;
+		}
+
+		if ( ! is_int( $chapter_id ) ) {
+			$chapter_id = get_page_by_path( $study_slug. '/' . $chapter_id, OBJECT, 'sc_study' )->ID;
+		}
+
 		if ( empty( $chapter_id ) || ! $chapter = get_post( $chapter_id ) ) {
 			return new WP_Error( 'json_post_invalid_id', __( 'Invalid post ID.' ), array( 'status' => 404 ) );
 		}
@@ -222,6 +232,10 @@ class Studies extends WP_REST_Posts_Controller {
 
 		$args = (array) $request->get_params();
 		$study_id = $args['study_id'];
+
+		if ( ! is_int( $study_id ) ) {
+			$study_id = get_page_by_path( $study_id, OBJECT, 'sc_study' )->ID;
+		}
 
 		$study_id = sc_get_study_id( $study_id );
 
@@ -416,5 +430,27 @@ class Studies extends WP_REST_Posts_Controller {
 		$query_params['parent']['default'] = 0;
 
 		return $query_params;
+	}
+
+	/**
+	 * Get the post, if the ID is valid.
+	 *
+	 * @since 4.7.2
+	 *
+	 * @param int $id Supplied ID.
+	 * @return WP_Post|WP_Error Post object if ID is valid, WP_Error otherwise.
+	 */
+	protected function get_post( $id ) {
+		$error = new WP_Error( 'rest_post_invalid_id', __( 'Invalid post ID.' ), array( 'status' => 404 ) );
+		if ( (int) $id <= 0 ) {
+			return $error;
+		}
+
+		$post = get_post( (int) $id );
+		if ( empty( $post ) || empty( $post->ID ) || $this->post_type !== $post->post_type ) {
+			return $error;
+		}
+
+		return $post;
 	}
 }
