@@ -177,16 +177,33 @@ function sc_study_navigation( $id = null ) {
 /**
  * Return the current users comment answer to the current element
  *
- * @return array|int
+ * @param null $post_id
+ * @param null $group_id
+ * @param null $user_id
+ *
+ * @return bool
+ * @author Tanner Moushey
  */
-function sc_study_get_answer() {
+function sc_study_get_answer( $post_id = null, $group_id = null, $user_id = null ) {
+
+	if ( ! $post_id ) {
+		$post_id = get_the_ID();
+	}
+
+	if ( ! $group_id ) {
+		$group_id = bp_get_group_id();
+	}
+
+	if ( ! $user_id ) {
+		$user_id = get_current_user_id();
+	}
 
 	$answer = get_comments( array(
-		'post_id'    => get_the_ID(),
+		'post_id'    => $post_id,
 		'meta_key'   => 'group_id',
-		'meta_value' => absint( bp_get_group_id() ),
+		'meta_value' => absint( $group_id ),
 		'number'     => 1,
-		'author__in' => get_current_user_id(),
+		'author__in' => $user_id,
 	) );
 
 	if ( isset( $answer[0] ) ) {

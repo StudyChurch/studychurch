@@ -69,6 +69,9 @@ class API {
 		$controller = new API\Attachments();
 		$controller->register_routes();
 
+		$controller = new API\Answers();
+		$controller->register_routes();
+
 		$controller = new API\Authenticate();
 		$controller->register_routes();
 

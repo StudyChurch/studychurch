@@ -23,16 +23,6 @@ class Studies extends WP_REST_Posts_Controller {
 
 		parent::register_routes();
 
-		register_rest_field( 'sc_study', 'data_type', array(
-			'update_callback' => array( $this, 'save_data_type' ),
-			'get_callback' => array( $this, 'get_data_type' )
-		) );
-
-		register_rest_field( 'sc_study', 'is_private', array(
-			'update_callback' => array( $this, 'save_is_private' ),
-			'get_callback' => array( $this, 'get_is_private' )
-		) );
-
 		$posts_args = array(
 			'context'               => array(
 				'default'           => 'view',
