@@ -163,6 +163,37 @@ class Setup {
 		add_action( 'template_redirect',  array( $this, 'maybe_force_login'  ), 5 );
 		add_action( 'template_redirect',  array( $this, 'redirect_logged_in_user' ) );
 		add_action( 'admin_init',         array( $this, 'redirect_backend' ) );
+		add_action( 'bp_register_activity_actions', array( $this, 'action_answer_update' ) );
+	}
+
+	/**
+	 * Register answer_update action
+	 *
+	 * @author Tanner Moushey
+	 */
+	public function action_answer_update() {
+		bp_activity_set_action(
+		// Older avatar activity items use 'profile' for component. See r4273.
+			'study',
+			'answer_update',
+			__( 'Member adds or updates an answer', 'buddypress' ),
+			'bp_xprofile_format_activity_action_new_avatar',
+			__( 'Added/Updated Answer', 'buddypress' ),
+			array( 'group' )
+		);
+	}
+
+	/**
+	 * @param $action
+	 * @param $activity
+	 *
+	 * @return mixed
+	 * @author Tanner Moushey
+	 */
+	public function action_answer_update_format( $action, $activity ) {
+		$action   = sprintf( __( '%s answered a question', 'buddypress' ), bp_core_get_user_displayname( $activity->user_id ) );
+
+		return apply_filters( 'sc_action_answer_update_format', $action, $activity );
 	}
 
 	/**

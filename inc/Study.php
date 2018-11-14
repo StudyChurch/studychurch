@@ -33,7 +33,7 @@ class Study {
 	 * Add Hooks and Actions
 	 */
 	protected function __construct() {
-		add_action( 'template_redirect', array( $this, 'setup_study_group' ) );
+		add_action( 'template_redirect', array( $this, 'maybe_setup_study_group' ) );
 		add_action( 'template_redirect', array( $this, 'redirect_on_empty' ) );
 		add_action( 'wp_head', array( $this, 'print_styles' ) );
 		add_action( 'pre_get_posts', array( $this, 'study_archive' ) );
@@ -89,59 +89,76 @@ class Study {
 	}
 
 	/**
+	 * Setup the group attached to this study.
+	 *
+	 * @author Tanner Moushey
+	 */
+	public function maybe_setup_study_group() {
+
+		if ( ! is_singular( 'sc_study' ) ) {
+			return;
+		}
+
+		$study_id = sc_get_study_id();
+
+		// allow editors and up to proceed
+		if ( current_user_can( 'edit_post', $study_id ) ) {
+			return;
+		}
+
+		// if the group was setup successfully, return
+		if ( $this->setup_study_group( $study_id ) ) {
+			return;
+		}
+
+		// if we are allowing personal studies, we don't care if the group was setup
+		if ( apply_filters( 'sc_allow_personal_studies', false, $study_id ) ) {
+			return;
+		}
+
+		wp_safe_redirect( bp_loggedin_user_domain() );
+		die();
+
+	}
+
+	/**
 	 * Setup global for current group and redirect if user does not have access to this
 	 * study
+	 *
+	 * @param bool $group_id
+	 *
+	 * @return bool|int
+	 * @author Tanner Moushey
 	 */
-	public function setup_study_group( $study_id = false ) {
-
-		if ( empty( $study_id ) && ! is_singular( 'sc_study' ) ) {
-			return;
-		}
-
-		$doing_ajax = ( defined( 'DOING_AJAX' ) && DOING_AJAX );
+	public function setup_study_group( $group_id = false ) {
 
 		if ( ! is_user_logged_in() ) {
-			return;
+			return false;
 		}
 
-		$group_id = false;
+		if ( empty( $group_id ) ) {
 
-		if ( ! empty( $_REQUEST['sc-group'] ) ) {
-			$group_id = absint( $_REQUEST['sc-group'] );
+			if ( ! empty( $_REQUEST['sc-group'] ) ) {
+				$group_id = absint( $_REQUEST['sc-group'] );
 
-			if ( empty( $_COOKIE['sc-group'] ) || $group_id != $_COOKIE['sc-group'] ) {
-				@setcookie( 'sc-group', $group_id, time() + MONTH_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, is_ssl() );
+				if ( empty( $_COOKIE['sc-group'] ) || $group_id != $_COOKIE['sc-group'] ) {
+					@setcookie( 'sc-group', $group_id, time() + MONTH_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, is_ssl() );
+				}
+			} else if ( ! empty( $_COOKIE['sc-group'] ) ) {
+				$group_id = absint( $_COOKIE['sc-group'] );
 			}
-		} else if ( ! empty( $_COOKIE['sc-group'] ) ) {
-			$group_id = absint( $_COOKIE['sc-group'] );
+
 		}
 
-		if ( ! $group_id ) {
-
-			// allow editors and up to proceed
-			if ( current_user_can( 'edit_post', $study_id ) ) {
-				return;
-			}
-
-			// only redirect if this is not an ajax call
-			if ( empty( $doing_ajax ) && ! apply_filters( 'sc_allow_personal_studies', false, $study_id ) ) {
-				wp_safe_redirect( bp_loggedin_user_domain() );
-				die();
-			} else {
-				return;
-			}
-
+		if ( empty( $group_id ) ) {
+			return false;
 		}
 
 		bp_has_groups( 'include=' . $group_id );
 		bp_groups();
 		bp_the_group();
 
-		// only redirect if this is not an ajax call
-		if ( empty( $doing_ajax ) && ! bp_get_group_id() ) {
-			wp_safe_redirect( bp_loggedin_user_domain() );
-			die();
-		}
+		return bp_get_group_id();
 
 	}
 

@@ -77,9 +77,9 @@ class Answers {
 
 		update_comment_meta( $data['comment_ID'], 'group_id', absint( $_POST['group_id'] ) );
 
-		studychurch()->study->setup_study_group( $data['comment_post_ID'] );
+		$group_id = studychurch()->study->setup_study_group();
 
-		if ( ! sc_answer_is_private( $data['comment_post_ID'] ) ) {
+		if ( $group_id && ! sc_answer_is_private( $data['comment_post_ID'] ) ) {
 			$activity_id = bp_activity_add( $activity_meta );
 			update_comment_meta( $data['comment_ID'], 'activity_id', $activity_id );
 		}

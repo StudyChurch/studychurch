@@ -37,7 +37,7 @@ class API {
 	 * Handle Actions
 	 */
 	protected function actions() {
-		add_action( 'rest_api_init', array( $this, 'load_api_routes' ) );
+		add_action( 'rest_api_init', array( $this, 'load_api_routes' ), 20 ); // load after BuddyPress
 	}
 
 	/**
