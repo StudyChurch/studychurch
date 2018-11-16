@@ -25,7 +25,7 @@ class SC_Main_Hooks {
 	 * Add Hooks and Actions
 	 */
 	protected function __construct() {
-		add_action( 'wp_footer', array( $this, 'bug_report_form' ) );
+//		add_action( 'wp_footer', array( $this, 'bug_report_form' ) );
 		add_action( 'wp_footer', array( $this, 'front_page_modal' ) );
 //		add_action( 'before_header', array( $this, 'beta_flag' ) );
 	}
