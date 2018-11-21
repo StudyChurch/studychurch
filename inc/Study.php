@@ -101,13 +101,13 @@ class Study {
 
 		$study_id = sc_get_study_id();
 
-		// allow editors and up to proceed
-		if ( current_user_can( 'edit_post', $study_id ) ) {
+		// if the group was setup successfully, return
+		if ( $this->setup_study_group() ) {
 			return;
 		}
 
-		// if the group was setup successfully, return
-		if ( $this->setup_study_group( $study_id ) ) {
+		// allow editors and up to proceed
+		if ( current_user_can( 'edit_post', $study_id ) ) {
 			return;
 		}
 
