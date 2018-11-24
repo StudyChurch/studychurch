@@ -15,14 +15,14 @@ use Firebase\JWT\JWT;
  *
  * @since 4.7.0
  *
- * @see WP_REST_Controller
+ * @see   WP_REST_Controller
  */
 class Authenticate extends WP_REST_Controller {
 
 	/**
 	 * Constructor.
 	 *
-	 * @since 4.7.0
+	 * @since  4.7.0
 	 * @access public
 	 */
 	public function __construct() {
@@ -33,10 +33,10 @@ class Authenticate extends WP_REST_Controller {
 	/**
 	 * Registers the routes for the objects of the controller.
 	 *
-	 * @since 4.7.0
+	 * @since  4.7.0
 	 * @access public
 	 *
-	 * @see register_rest_route()
+	 * @see    register_rest_route()
 	 */
 	public function register_routes() {
 
@@ -55,6 +55,7 @@ class Authenticate extends WP_REST_Controller {
 	 * Checks if a given request has access to read and manage the user's passwords.
 	 *
 	 * @param WP_REST_Request $request Full d   etails about the request.
+	 *
 	 * @return bool True if the request has read access for the item, otherwise false.
 	 */
 	public function get_permissions_check( $request ) {
@@ -91,6 +92,7 @@ class Authenticate extends WP_REST_Controller {
 	 * Retrieves the passwords.
 	 *
 	 * @param WP_REST_Request $request Full details about the request.
+	 *
 	 * @return array|WP_Error Array on success, or WP_Error object on failure.
 	 */
 	public function get_user( $request ) {
@@ -98,23 +100,24 @@ class Authenticate extends WP_REST_Controller {
 		$user       = new User( wp_get_current_user() );
 		$key        = file_get_contents( __DIR__ . '/Auth/jwtRS256.key' );
 		$expiration = time() + 2 * WEEK_IN_SECONDS;
-		$groups     = $this->do_rest_request( '/buddypress/v1/groups', array(
+		$groups     = $this->do_rest_request( '/studychurch/v1/groups', array(
 			'show_hidden' => true,
-			'user_id' => $user->ID,
-		    'status'  => 'hidden',
+			'user_id'     => $user->ID,
+			'status'      => 'hidden',
+			'members'     => 'all',
 		) );
 
 		$studies = $this->do_rest_request( '/studychurch/v1/studies', array(
-			'status'      => 'any',
-			'per_page'    => 100,
-			'orderby'     => 'title',
-			'order'       => 'asc',
-			'author'      => $user->ID
+			'status'   => 'any',
+			'per_page' => 100,
+			'orderby'  => 'title',
+			'order'    => 'asc',
+			'author'   => $user->ID
 		) );
 
 		$token = JWT::encode( array(
-			'secret'     => wp_generate_password(),
-			'exp'        => $expiration,
+			'secret' => wp_generate_password(),
+			'exp'    => $expiration,
 		), $key, 'RS256' );
 
 		set_transient( 'user_authentication_' . get_current_user_id(), $token, $expiration );
@@ -123,8 +126,8 @@ class Authenticate extends WP_REST_Controller {
 			'token' => $token,
 			'user'  => [
 				'avatar'    => [
-					'full'  => bp_get_displayed_user_avatar( 'type=full&html=false&item_id=' . $user->ID ),
-					'thumb' => bp_get_displayed_user_avatar( 'type=thumb&html=false&item_id=' . $user->ID ),
+					'img'  => bp_get_displayed_user_avatar( ['type' => 'full', 'html' => true, 'item_id' => $user->ID ] ),
+					'full' => bp_get_displayed_user_avatar( ['type' => 'full', 'html' => false, 'item_id' => $user->ID ] ),
 				],
 				'id'        => $user->ID,
 				'name'      => $user->display_name,
@@ -144,6 +147,7 @@ class Authenticate extends WP_REST_Controller {
 		$request->set_query_params( $atts );
 		$response = rest_do_request( $request );
 		$server   = rest_get_server();
+
 		return $server->response_to_data( $response, false );
 	}
 
