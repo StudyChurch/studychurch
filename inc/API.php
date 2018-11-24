@@ -69,8 +69,10 @@ class API {
 		$controller = new API\Attachments();
 		$controller->register_routes();
 
-		$controller = new API\Answers();
-		$controller->register_routes();
+		if ( class_exists( 'BP_REST_Activity_Endpoint' ) ) {
+			$controller = new API\Activity();
+			$controller->register_routes();
+		}
 
 		$controller = new API\Authenticate();
 		$controller->register_routes();

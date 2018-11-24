@@ -177,7 +177,7 @@ class Setup {
 			'study',
 			'answer_update',
 			__( 'Member adds or updates an answer', 'buddypress' ),
-			'bp_xprofile_format_activity_action_new_avatar',
+			[ $this, 'action_answer_update_format' ],
 			__( 'Added/Updated Answer', 'buddypress' ),
 			array( 'group' )
 		);
@@ -191,7 +191,7 @@ class Setup {
 	 * @author Tanner Moushey
 	 */
 	public function action_answer_update_format( $action, $activity ) {
-		$action   = sprintf( __( '%s answered a question', 'buddypress' ), bp_core_get_user_displayname( $activity->user_id ) );
+		$action = sprintf( __( '%s answered a question in <a href="%s#post-%s">%s</a>' ), bp_core_get_user_displayname( $activity->user_id ), studychurch()->study::get_group_link( $activity->secondary_item_id, absint( $activity->item_id ) ), $activity->secondary_item_id, get_the_title( sc_get_study_id( $activity->secondary_item_id ) ) );
 
 		return apply_filters( 'sc_action_answer_update_format', $action, $activity );
 	}

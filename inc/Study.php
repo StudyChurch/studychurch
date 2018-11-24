@@ -337,7 +337,13 @@ class Study {
 
 		$study_id = self::get_study_id( $study_id );
 
-		return add_query_arg( 'sc-group', $group_id, get_permalink( $study_id ) );
+		if ( ! apply_filters( 'sc_new_group_link', false ) ) {
+			return add_query_arg( 'sc-group', $group_id, get_permalink( $study_id ) );
+		} else {
+			$group = groups_get_group( $group_id );
+			// TODO: This is wrong
+			return str_replace( '/studies/', '/groups/' . bp_get_group_slug( $group ) . '/studies/', get_permalink( $study_id ) );
+		}
 	}
 
 	/**
