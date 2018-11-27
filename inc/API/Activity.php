@@ -78,6 +78,53 @@ class Activity extends BP_REST_Activity_Endpoint {
 	}
 
 	/**
+	 * Show hidden activity?
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param  string $component The activity component.
+	 * @param  int    $item_id   The activity item ID.
+	 *
+	 * @return boolean
+	 */
+	protected function show_hidden( $component, $item_id ) {
+		$user_id = get_current_user_id();
+		$retval  = false;
+
+		// If activity is from a group, do an extra cap check.
+		if ( ! $retval && ! empty( $item_id ) && in_array( $component, array( buddypress()->groups->id, 'study' ) ) ) {
+			foreach ( (array) $item_id as $group_id ) {
+				// Group admins and mods have access as well.
+				if ( groups_is_user_admin( $user_id, $group_id ) || groups_is_user_mod( $user_id, $group_id ) ) {
+					$retval = true;
+
+					// User is a member of the group.
+				} elseif ( (bool) groups_is_user_member( $user_id, $group_id ) ) {
+					$retval = true;
+				}
+			}
+		}
+
+		// Moderators as well.
+		if ( bp_current_user_can( 'bp_moderate' ) ) {
+			$retval = true;
+		}
+
+		/**
+		 * Filter here to edit the `show_hidden` activity param for the given component/item_id.
+		 *
+		 * @since 0.1.0
+		 *
+		 * @param boolean $retval    True to include hidden activities. False otherwise.
+		 * @param integer $user_id   The current user ID.
+		 * @param string  $component The activity component.
+		 * @param integer $item_id   The activity item ID.
+		 */
+		return (bool) apply_filters( 'rest_activity_show_hidden', $retval, $user_id, $component, $item_id );
+	}
+
+
+	/**
 	 * Update schema
 	 *
 	 * @return array
@@ -86,8 +133,9 @@ class Activity extends BP_REST_Activity_Endpoint {
 	public function get_item_schema() {
 		$schema = parent::get_item_schema();
 
-		$schema['properties']['component']['enum'][] = 'study';
-		$schema['properties']['id']['readonly'] = false;
+		$schema['properties']['component']['enum'][]                     = 'study';
+		$schema['properties']['id']['readonly']                          = false;
+		$schema['properties']['content']['properties']['raw']['context'] = array( 'view', 'edit' );
 
 		return $schema;
 	}
@@ -102,6 +150,15 @@ class Activity extends BP_REST_Activity_Endpoint {
 		$params = parent::get_collection_params();
 
 		$params['component']['enum'][] = 'study';
+
+		$params['primary_id']['type']              = 'array';
+		$params['primary_id']['default']           = array();
+		$params['primary_id']['sanitize_callback'] = 'wp_parse_id_list';
+
+		$params['secondary_id']['type']              = 'array';
+		$params['secondary_id']['default']           = array();
+		$params['secondary_id']['sanitize_callback'] = 'wp_parse_id_list';
+
 
 		return $params;
 	}

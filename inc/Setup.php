@@ -174,7 +174,7 @@ class Setup {
 	public function action_answer_update() {
 		bp_activity_set_action(
 		// Older avatar activity items use 'profile' for component. See r4273.
-			'study',
+			'groups',
 			'answer_update',
 			__( 'Member adds or updates an answer', 'buddypress' ),
 			[ $this, 'action_answer_update_format' ],

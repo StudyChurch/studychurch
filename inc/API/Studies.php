@@ -14,7 +14,7 @@ class Studies extends WP_REST_Posts_Controller {
 		parent::__construct( $this->post_type );
 
 		$this->namespace = studychurch()->get_api_namespace();
-		$this->base = 'studies';
+		$this->base      = 'studies';
 
 		add_action( 'before_delete_post', array( $this, 'delete_chapter_items' ) );
 	}
@@ -25,26 +25,26 @@ class Studies extends WP_REST_Posts_Controller {
 
 		register_rest_field( 'sc_study', 'data_type', array(
 			'update_callback' => array( $this, 'save_data_type' ),
-			'get_callback' => array( $this, 'get_data_type' )
+			'get_callback'    => array( $this, 'get_data_type' )
 		) );
 		register_rest_field( 'sc_study', 'is_private', array(
 			'update_callback' => array( $this, 'save_is_private' ),
-			'get_callback' => array( $this, 'get_is_private' )
+			'get_callback'    => array( $this, 'get_is_private' )
 		) );
 
 		$posts_args = array(
-			'context'               => array(
-				'default'           => 'view',
+			'context'  => array(
+				'default' => 'view',
 			),
-			'page'                  => array(
+			'page'     => array(
 				'default'           => 1,
 				'sanitize_callback' => 'absint',
 			),
-			'per_page'              => array(
+			'per_page' => array(
 				'default'           => 10,
 				'sanitize_callback' => 'absint',
 			),
-			'filter'                => array(),
+			'filter'   => array(),
 		);
 
 		register_rest_route( $this->namespace, $this->base . '/(?P<study_id>[a-zA-Z0-9-]+)/chapters', array(
@@ -52,7 +52,7 @@ class Studies extends WP_REST_Posts_Controller {
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'get_chapters' ),
 				'args'     => $posts_args,
-//				'permission_callback' => array( $this, 'get_item_permissions_check' ),
+				//				'permission_callback' => array( $this, 'get_item_permissions_check' ),
 			),
 			array(
 				'methods'  => WP_REST_Server::CREATABLE,
@@ -66,21 +66,21 @@ class Studies extends WP_REST_Posts_Controller {
 				'methods'  => WP_REST_Server::READABLE,
 				'callback' => array( $this, 'get_chapter' ),
 				'args'     => $posts_args,
-//				'permission_callback' => array( $this, 'get_item_permissions_check' ),
+				//				'permission_callback' => array( $this, 'get_item_permissions_check' ),
 			),
 			array(
-				'methods'         => WP_REST_Server::EDITABLE,
-				'callback'        => array( $this, 'update_item' ),
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => array( $this, 'update_item' ),
 				'permission_callback' => array( $this, 'update_item_permissions_check' ),
-				'args'            => $this->get_endpoint_args_for_item_schema( false ),
+				'args'                => $this->get_endpoint_args_for_item_schema( false ),
 			),
 			array(
-				'methods'  => WP_REST_Server::DELETABLE,
-				'callback' => array( $this, 'delete_item' ),
+				'methods'             => WP_REST_Server::DELETABLE,
+				'callback'            => array( $this, 'delete_item' ),
 				'permission_callback' => array( $this, 'delete_item_permissions_check' ),
-				'args'     => array(
-					'force'    => array(
-						'default'      => true,
+				'args'                => array(
+					'force' => array(
+						'default' => true,
 					),
 				),
 			),
@@ -88,9 +88,9 @@ class Studies extends WP_REST_Posts_Controller {
 
 		register_rest_route( $this->namespace, $this->base . '/(?P<study_id>[a-zA-Z0-9-]+)/chapters/(?P<chapter_id>[a-zA-Z0-9-]+)/items', array(
 			array(
-				'methods'  => WP_REST_Server::READABLE,
-				'callback' => array( $this, 'get_chapter_items' ),
-				'args'     => $posts_args,
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_chapter_items' ),
+				'args'                => $posts_args,
 				'permission_callback' => array( $this, 'get_item_permissions_check' ),
 			),
 			array(
@@ -102,24 +102,24 @@ class Studies extends WP_REST_Posts_Controller {
 
 		register_rest_route( $this->namespace, $this->base . '/(?P<study_id>[a-zA-Z0-9-]+)/chapters/(?P<chapter_id>[a-zA-Z0-9-]+)/items/(?P<id>\d+)', array(
 			array(
-				'methods'  => WP_REST_Server::READABLE,
-				'callback' => array( $this, 'get_chapter_item' ),
-				'args'     => $posts_args,
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_chapter_item' ),
+				'args'                => $posts_args,
 				'permission_callback' => array( $this, 'get_item_permissions_check' ),
 			),
 			array(
-				'methods'         => WP_REST_Server::EDITABLE,
-				'callback'        => array( $this, 'update_item' ),
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => array( $this, 'update_item' ),
 				'permission_callback' => array( $this, 'update_item_permissions_check' ),
-				'args'            => $this->get_endpoint_args_for_item_schema( false ),
+				'args'                => $this->get_endpoint_args_for_item_schema( false ),
 			),
 			array(
-				'methods'  => WP_REST_Server::DELETABLE,
-				'callback' => array( $this, 'delete_item' ),
+				'methods'             => WP_REST_Server::DELETABLE,
+				'callback'            => array( $this, 'delete_item' ),
 				'permission_callback' => array( $this, 'delete_item_permissions_check' ),
-				'args'     => array(
-					'force'    => array(
-						'default'      => true,
+				'args'                => array(
+					'force' => array(
+						'default' => true,
 					),
 				),
 			),
@@ -129,16 +129,16 @@ class Studies extends WP_REST_Posts_Controller {
 
 	public function get_chapter( $request, $context = 'view' ) {
 
-		$args = (array) $request->get_params();
+		$args       = (array) $request->get_params();
 		$chapter_id = $args['id'];
-		$study_id = $study_slug = $args['study_id'];
+		$study_id   = $study_slug = $args['study_id'];
 
 		if ( is_numeric( $study_slug ) ) {
 			$study_slug = get_post( $study_id )->post_name;
 		}
 
 		if ( ! is_numeric( $chapter_id ) ) {
-			$chapter_id = get_page_by_path( $study_slug. '/' . $chapter_id, OBJECT, 'sc_study' )->ID;
+			$chapter_id = get_page_by_path( $study_slug . '/' . $chapter_id, OBJECT, 'sc_study' )->ID;
 		}
 
 		if ( empty( $chapter_id ) || ! $chapter = get_post( $chapter_id ) ) {
@@ -219,7 +219,7 @@ class Studies extends WP_REST_Posts_Controller {
 			$struct[] = $part_data;
 		}
 
-		$chapter = $this->prepare_response_for_collection( $chapter );
+		$chapter             = $this->prepare_response_for_collection( $chapter );
 		$chapter['elements'] = $struct;
 
 		$response = rest_ensure_response( $chapter );
@@ -229,7 +229,7 @@ class Studies extends WP_REST_Posts_Controller {
 
 	public function get_chapters( $request, $context = 'view' ) {
 
-		$args = (array) $request->get_params();
+		$args     = (array) $request->get_params();
 		$study_id = $args['study_id'];
 
 		if ( ! is_numeric( $study_id ) ) {
@@ -318,7 +318,7 @@ class Studies extends WP_REST_Posts_Controller {
 
 	public function get_chapter_items( $request, $context = 'view' ) {
 
-		$args = (array) $request->get_params();
+		$args       = (array) $request->get_params();
 		$chapter_id = $args['chapter_id'];
 
 		$study_id = sc_get_study_id( $chapter_id );
@@ -336,7 +336,7 @@ class Studies extends WP_REST_Posts_Controller {
 			'posts_per_page' => 10000,
 		);
 
-		$study_query    = new WP_Query();
+		$study_query = new WP_Query();
 		$study_items = $study_query->query( $query );
 
 		if ( 0 === $study_query->found_posts ) {
@@ -367,20 +367,20 @@ class Studies extends WP_REST_Posts_Controller {
 	}
 
 	public function get_chapter_item( $request, $context = 'view' ) {
-		$id = (int) $request['id'];
+		$id   = (int) $request['id'];
 		$post = get_post( $id );
 
 		if ( empty( $id ) || empty( $post->ID ) || $this->post_type !== $post->post_type ) {
 			return new WP_Error( 'rest_post_invalid_id', __( 'Invalid post ID.' ), array( 'status' => 404 ) );
 		}
 
-		$data = $this->prepare_item_for_response( $post, $request );
+		$data                     = $this->prepare_item_for_response( $post, $request );
 		$data->data['data_type']  = esc_html( sc_get_data_type( $data->data['id'] ) );
 		$data->data['is_private'] = sc_answer_is_private( $data->data['id'] );
 
 		$response = rest_ensure_response( $data );
 
-		$response->link_header( 'alternate',  get_permalink( $id ), array( 'type' => 'text/html' ) );
+		$response->link_header( 'alternate', get_permalink( $id ), array( 'type' => 'text/html' ) );
 
 		return $response;
 	}
@@ -390,7 +390,7 @@ class Studies extends WP_REST_Posts_Controller {
 			return;
 		}
 
-		foreach( get_posts( 'post_type=sc_study&posts_per_page=-1&post_parent=' . $id ) as $post ) {
+		foreach ( get_posts( 'post_type=sc_study&posts_per_page=-1&post_parent=' . $id ) as $post ) {
 			wp_delete_post( $post->ID );
 		}
 	}
@@ -410,6 +410,7 @@ class Studies extends WP_REST_Posts_Controller {
 	public function save_is_private( $value, $object, $field_name, $request ) {
 		// if is_private is set, then the answer is private
 		$value = ( $value ) ? 'private' : 'public';
+
 		return sc_set_privacy( $value, $object->ID );
 	}
 
@@ -437,6 +438,7 @@ class Studies extends WP_REST_Posts_Controller {
 	 * @since 4.7.2
 	 *
 	 * @param int $id Supplied ID.
+	 *
 	 * @return WP_Post|WP_Error Post object if ID is valid, WP_Error otherwise.
 	 */
 	protected function get_post( $id ) {
@@ -451,5 +453,38 @@ class Studies extends WP_REST_Posts_Controller {
 		}
 
 		return $post;
+	}
+
+	/**
+	 * Allow all stati when querying one's own studies
+	 *
+	 * @param array|string     $statuses
+	 * @param \WP_REST_Request $request
+	 * @param string           $parameter
+	 *
+	 * @return array|bool|string|WP_Error
+	 * @author Tanner Moushey
+	 */
+	public function sanitize_post_statuses( $statuses, $request, $parameter ) {
+		$statuses = wp_parse_slug_list( $statuses );
+
+		if ( get_current_user_id() == $request['author'] ) {
+
+			foreach ( $statuses as $status ) {
+				$result = rest_validate_request_arg( $status, $request, $parameter );
+				if ( is_wp_error( $result ) ) {
+					return $result;
+				}
+			}
+
+			return $statuses;
+		}
+
+		$allowed = ['private', 'publish'];
+		if ( empty( array_diff( $statuses, $allowed ) ) ) {
+			return $statuses;
+		}
+
+		return parent::sanitize_post_statuses( $statuses, $request, $parameter ); // TODO: Change the autogenerated stub
 	}
 }
