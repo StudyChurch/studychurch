@@ -134,6 +134,7 @@ class Authenticate extends WP_REST_Controller {
 				'username'  => $user->user_login,
 				'firstName' => $user->first_name,
 				'lastName'  => $user->last_name,
+				'email'     => $user->user_email,
 				'groups'    => $groups,
 				'studies'   => $studies,
 			],
