@@ -132,7 +132,8 @@ class Assignments extends WP_REST_Controller {
 			foreach ( $assignments->get_the_lessons() as $lesson ) {
 				$ass['lessons'][] = [
 					'id'    => $lesson,
-					'title' => get_the_title( $lesson )
+					'title' => get_the_title( $lesson ),
+				    'link'  => get_the_permalink( $lesson ),
 				];
 			}
 

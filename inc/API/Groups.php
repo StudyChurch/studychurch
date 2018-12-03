@@ -48,8 +48,9 @@ class Groups extends BP_REST_Groups_Endpoint {
 	public function get_item_schema() {
 		$schema = parent::get_item_schema();
 
-		$schema['properties']['component']['enum'][] = 'study';
-		$schema['properties']['id']['readonly']      = false;
+		$schema['properties']['component']['enum'][]                         = 'study';
+		$schema['properties']['id']['readonly']                              = false;
+		$schema['properties']['description']['properties']['raw']['context'] = [ 'view', 'edit' ];
 
 		return $schema;
 	}

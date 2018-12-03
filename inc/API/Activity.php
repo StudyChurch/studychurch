@@ -36,6 +36,7 @@ class Activity extends BP_REST_Activity_Endpoint {
 
 		$request->set_param( 'context', 'edit' );
 		$prepared_activity = $this->prepare_item_for_database( $request );
+		$prepared_activity->item_id = $prepared_activity->group_id;
 
 		$activity_id = bp_activity_add( $prepared_activity );
 

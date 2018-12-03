@@ -221,6 +221,7 @@ class Studies extends WP_REST_Posts_Controller {
 
 		$chapter             = $this->prepare_response_for_collection( $chapter );
 		$chapter['elements'] = $struct;
+		$chapter['study']    = get_the_title( $study_id );
 
 		$response = rest_ensure_response( $chapter );
 
@@ -275,6 +276,7 @@ class Studies extends WP_REST_Posts_Controller {
 			$child_query          = new WP_Query();
 			$children             = $child_query->query( $query );
 
+			$chapter_data['study']    = get_the_title( $study_id );
 			$chapter_data['elements'] = array();
 			$chapter_data['sections'] = array();
 
