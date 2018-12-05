@@ -97,6 +97,15 @@ class Groups extends BP_REST_Groups_Endpoint {
 			],
 		];
 
+		$fields['invite'] = [
+			'get_callback' => [ $this, 'get_group_invite_link' ],
+			'schema'       => [
+				'context'     => [ 'view', 'edit' ],
+				'description' => __( 'The invite link for this group', studychurch()->get_id() ),
+				'type'        => 'string',
+			],
+		];
+
 		return $fields;
 	}
 
@@ -175,6 +184,10 @@ class Groups extends BP_REST_Groups_Endpoint {
 
 		return $group_members;
 
+	}
+
+	public function get_group_invite_link( $object ) {
+		return sprintf( "%s?group=%s&key=%s", trailingslashit( home_url( 'join' ) ), $object->slug, sc_get_group_invite_key( $object->id ) );
 	}
 
 }
