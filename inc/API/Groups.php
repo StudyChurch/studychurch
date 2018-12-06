@@ -238,7 +238,7 @@ class Groups extends BP_REST_Groups_Endpoint {
 	}
 
 	public function get_group_invite_link( $object ) {
-		return sprintf( "%s?group=%s&key=%s", trailingslashit( home_url( 'join' ) ), $object->slug, sc_get_group_invite_key( $object->id ) );
+		return sprintf( "%s?group=%s&key=%s", trailingslashit( home_url( 'join' ) ), $object['slug'], sc_get_group_invite_key( $object['id'] ) );
 	}
 
 }
