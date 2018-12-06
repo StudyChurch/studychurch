@@ -49,7 +49,7 @@ class Assignments extends WP_REST_Controller {
 			array(
 				'methods'             => WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'create_item' ),
-				'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ),
+//				'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ),
 				'permission_callback' => array( $this, 'get_permissions_check' ),
 			),
 			array(
@@ -91,6 +91,16 @@ class Assignments extends WP_REST_Controller {
 	 */
 	public function get_permissions_check( $request ) {
 		return is_user_logged_in();
+	}
+
+	/**
+	 * Checks if a given request has access to read and manage the user's passwords.
+	 *
+	 * @param WP_REST_Request $request Full details about the request.
+	 * @return bool True if the request has read access for the item, otherwise false.
+	 */
+	public function create_permissions_check( $request ) {
+		return is_user_logged_in() && sc_user_can_manage_group();
 	}
 
 	/**
@@ -150,20 +160,18 @@ class Assignments extends WP_REST_Controller {
 	 * @return array|WP_Error Array on success, or error object on failure.
 	 */
 	public function create_item( $request ) {
-		$user = new User( $request['user_id'] );
 
-		if ( empty( $request['name'] ) ) {
-			return new WP_Error( 'no-name', __( 'Please provide a name to use for the new password.', 'awesome-support-api' ), array( 'status' => 404 ) );
+		if ( ( empty( $request['content'] ) && empty( $request['lessons'] ) ) || empty( $request['date'] ) ) {
+			return new WP_Error( 'invalid data', 'Please provide content and a due date' );
 		}
 
-		$new_item = $user->create_new_api_password( $request['name'] );
+		$id = sc_add_group_assignment( [
+			'content' => $request['content'],
+		    'lessons' => $request['lessons'],
+		    'date'    => $request['date'],
+		], $request['group_id'] );
 
-		// Some tidying before we return it.
-		$new_item['created']   = date( get_option( 'date_format', 'r' ), $new_item['created'] );
-		$new_item['last_used'] = '—';
-		$new_item['last_ip']   = '—';
-
-		return $new_item;
+		return sc_get_group_assignment( $id );
 	}
 
 	/**
