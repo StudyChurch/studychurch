@@ -35,7 +35,7 @@ if ( ! $header_logo = get_theme_mod( 'sc_logo' ) ) {
 					<li class="name">
 						<h1>
 							<?php $link = ( is_user_logged_in() ) ? bp_loggedin_user_domain() : home_url( '/' ); ?>
-							<a href="<?php echo esc_url( $link ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home">
+							<a href="<?php echo apply_filters( 'sc_header_link', esc_url( $link ) ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home">
 
 								<img src="<?php echo esc_url(  $header_logo ); ?>" />
 								<span class="screen-reader"><?php bloginfo( 'name' ); ?></span>
