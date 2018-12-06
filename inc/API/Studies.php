@@ -27,10 +27,15 @@ class Studies extends WP_REST_Posts_Controller {
 			'update_callback' => array( $this, 'save_data_type' ),
 			'get_callback'    => array( $this, 'get_data_type' )
 		) );
+
 		register_rest_field( 'sc_study', 'is_private', array(
 			'update_callback' => array( $this, 'save_is_private' ),
 			'get_callback'    => array( $this, 'get_is_private' )
 		) );
+
+//		register_rest_field( 'sc_study', 'navigation', array(
+//			'get_callback'    => array( $this, 'get_navigation' )
+//		) );
 
 		$posts_args = array(
 			'context'  => array(
@@ -418,6 +423,23 @@ class Studies extends WP_REST_Posts_Controller {
 
 	public function get_is_private( $object, $field_name, $request ) {
 		return sc_answer_is_private( $object['id'] );
+	}
+
+	/**
+	 * Get the navigation for the study
+	 *
+	 * @param $object
+	 *
+	 * @return array
+	 * @author Tanner Moushey
+	 */
+	public function get_navigation( $object ) {
+		$study_id = sc_get_study_id( $object['id'] );
+		if ( $object['id'] == $study_id || $object['parent'] == $study_id ) {
+			return sc_study_get_navigation( $object['id'] );
+		} else {
+			return [];
+		}
 	}
 
 	/**

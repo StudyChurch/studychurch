@@ -40,6 +40,56 @@ class Groups extends BP_REST_Groups_Endpoint {
 	}
 
 	/**
+	 * Update a group.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param \WP_REST_Request $request Full details about the request.
+	 * @return \WP_REST_Response|WP_Error
+	 */
+	public function update_item( $request ) {
+		$group_id = groups_create_group( $this->prepare_item_for_database( $request ) );
+
+		// If the update was fired but returned an error,
+		// send a custom error to the api.
+		if ( ! is_numeric( $group_id ) ) {
+			return new WP_Error( 'rest_user_cannot_update_group',
+				__( 'Cannot update existing group.', 'buddypress' ),
+				array(
+					'status' => 500,
+				)
+			);
+		}
+
+		if ( ! empty( $request['studies'] ) ) {
+			groups_update_groupmeta( $group_id, '_sc_study', array_unique( array_map( 'absint', $request['studies'] ) ) );
+		}
+
+		$group = $this->get_group_object( $group_id );
+
+		$retval = array(
+			$this->prepare_response_for_collection(
+				$this->prepare_item_for_response( $group, $request )
+			),
+		);
+
+		$response = rest_ensure_response( $retval );
+
+		/**
+		 * Fires after a group is updated via the REST API.
+		 *
+		 * @since 0.1.0
+		 *
+		 * @param \BP_Groups_Group  $group    The updated group.
+		 * @param \WP_REST_Response $response The response data.
+		 * @param \WP_REST_Request  $request  The request sent to the API.
+		 */
+		do_action( 'rest_group_update_item', $group, $response, $request );
+
+		return $response;
+	}
+
+	/**
 	 * Update schema
 	 *
 	 * @return array
@@ -124,9 +174,10 @@ class Groups extends BP_REST_Groups_Endpoint {
 		foreach ( $studies as $study ) {
 			$gstudies[] = [
 				'id'          => $study,
-				'link'        => studychurch()->study::get_group_link( $study, $object['id'] ),
+				'link'        => get_permalink( $study ),
 				'title'       => get_the_title( $study ),
 				'description' => apply_filters( 'the_excerpt', get_post( $study )->post_excerpt ),
+				'thumbnail'   => get_the_post_thumbnail_url( $study, 'medium' ),
 			];
 		}
 
