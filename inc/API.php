@@ -61,6 +61,9 @@ class API {
 	 * Load APIs that are not loaded automatically
 	 */
 	public function load_api_routes() {
+		$controller = new API\Users();
+		$controller->register_routes();
+
 		$controller = new API\Passwords();
 		$controller->register_routes();
 

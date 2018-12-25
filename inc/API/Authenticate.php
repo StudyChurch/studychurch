@@ -52,6 +52,67 @@ class Authenticate extends WP_REST_Controller {
 	}
 
 	/**
+	 * Retrieves the passwords.
+	 *
+	 * @param WP_REST_Request $request Full details about the request.
+	 *
+	 * @return array|WP_Error Array on success, or WP_Error object on failure.
+	 */
+	public function get_user( $request ) {
+
+		$user       = new User( wp_get_current_user() );
+		$key        = file_get_contents( __DIR__ . '/Auth/jwtRS256.key' );
+		$expiration = time() + 2 * WEEK_IN_SECONDS;
+
+		$user_new     = $this->do_rest_request( '/studychurch/v1/users/' . $user->ID );
+
+		$groups     = $this->do_rest_request( '/studychurch/v1/groups', array(
+			'show_hidden' => true,
+			'user_id'     => $user->ID,
+			'status'      => 'hidden',
+			'members'     => 'all',
+		) );
+
+		$studies = $this->do_rest_request( '/studychurch/v1/studies', array(
+			'status'   => 'any',
+			'per_page' => 100,
+			'orderby'  => 'title',
+			'order'    => 'asc',
+			'author'   => $user->ID
+		) );
+
+		$token = JWT::encode( array(
+			'secret' => wp_generate_password(),
+			'exp'    => $expiration,
+		), $key, 'RS256' );
+
+		set_transient( 'user_authentication_' . get_current_user_id(), $token, $expiration );
+
+		$response = [
+			'token' => $token,
+			'user_new' => $user_new,
+			'groups' => $groups,
+			'studies' => $studies,
+			'user'  => [
+				'avatar'    => [
+					'img'  => bp_get_displayed_user_avatar( ['type' => 'full', 'html' => true, 'item_id' => $user->ID ] ),
+					'full' => bp_get_displayed_user_avatar( ['type' => 'full', 'html' => false, 'item_id' => $user->ID ] ),
+				],
+				'id'        => $user->ID,
+				'name'      => $user->display_name,
+				'username'  => $user->user_login,
+				'firstName' => $user->first_name,
+				'lastName'  => $user->last_name,
+				'email'     => $user->user_email,
+				'groups'    => $groups,
+				'studies'   => $studies,
+			],
+		];
+
+		return $response;
+	}
+
+	/**
 	 * Checks if a given request has access to read and manage the user's passwords.
 	 *
 	 * @param WP_REST_Request $request Full d   etails about the request.
@@ -86,61 +147,6 @@ class Authenticate extends WP_REST_Controller {
 		rcp_login_user_in( $user->ID, $user->user_login, true );
 
 		return is_user_logged_in();
-	}
-
-	/**
-	 * Retrieves the passwords.
-	 *
-	 * @param WP_REST_Request $request Full details about the request.
-	 *
-	 * @return array|WP_Error Array on success, or WP_Error object on failure.
-	 */
-	public function get_user( $request ) {
-
-		$user       = new User( wp_get_current_user() );
-		$key        = file_get_contents( __DIR__ . '/Auth/jwtRS256.key' );
-		$expiration = time() + 2 * WEEK_IN_SECONDS;
-		$groups     = $this->do_rest_request( '/studychurch/v1/groups', array(
-			'show_hidden' => true,
-			'user_id'     => $user->ID,
-			'status'      => 'hidden',
-			'members'     => 'all',
-		) );
-
-		$studies = $this->do_rest_request( '/studychurch/v1/studies', array(
-			'status'   => 'any',
-			'per_page' => 100,
-			'orderby'  => 'title',
-			'order'    => 'asc',
-			'author'   => $user->ID
-		) );
-
-		$token = JWT::encode( array(
-			'secret' => wp_generate_password(),
-			'exp'    => $expiration,
-		), $key, 'RS256' );
-
-		set_transient( 'user_authentication_' . get_current_user_id(), $token, $expiration );
-
-		$response = [
-			'token' => $token,
-			'user'  => [
-				'avatar'    => [
-					'img'  => bp_get_displayed_user_avatar( ['type' => 'full', 'html' => true, 'item_id' => $user->ID ] ),
-					'full' => bp_get_displayed_user_avatar( ['type' => 'full', 'html' => false, 'item_id' => $user->ID ] ),
-				],
-				'id'        => $user->ID,
-				'name'      => $user->display_name,
-				'username'  => $user->user_login,
-				'firstName' => $user->first_name,
-				'lastName'  => $user->last_name,
-				'email'     => $user->user_email,
-				'groups'    => $groups,
-				'studies'   => $studies,
-			],
-		];
-
-		return $response;
 	}
 
 	protected function do_rest_request( $route, $atts = array() ) {

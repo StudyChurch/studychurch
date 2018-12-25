@@ -4,6 +4,7 @@ namespace StudyChurch\API;
 
 use BP_REST_Groups_Endpoint;
 use WP_Error;
+use BP_Groups_Member;
 
 class Groups extends BP_REST_Groups_Endpoint {
 
@@ -196,6 +197,11 @@ class Groups extends BP_REST_Groups_Endpoint {
 	 * @author Tanner Moushey
 	 */
 	public function get_group_members( $object, $field_name, $request, $object_type ) {
+		return [
+			'members' => BP_Groups_Member::get_group_member_ids( $object['id'] ),
+			'admins'  => BP_Groups_Member::get_group_administrator_ids( $object['id'] ),
+			'mods'    => BP_Groups_Member::get_group_moderator_ids( $object['id'] )
+		];
 
 		if ( 'hide' == $request['members'] ) {
 			return [];

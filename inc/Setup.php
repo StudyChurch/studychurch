@@ -30,6 +30,16 @@ class Setup {
 	public $api;
 
 	/**
+	 * @var Organization
+	 */
+	public $organization;
+
+	/**
+	 * @var Library
+	 */
+	public $library;
+
+	/**
 	 * Only make one instance of the Setup
 	 *
 	 * @return Setup
@@ -110,6 +120,16 @@ class Setup {
 		 */
 		$this->api = API::get_instance();
 
+		/**
+		 * Initialize Organization customizations
+		 */
+		$this->organization = Organization::get_instance();
+
+		/**
+		 * Initialize Library / EDD customizations
+		 */
+		$this->library = Library::get_instance();
+
 	}
 
 	protected function sc_includes() {
@@ -134,6 +154,8 @@ class Setup {
 		add_filter( 'video_embed_html', array( $this, 'video_embed_html_wrap' ) );
 
 		add_filter( 'slt_fsp_caps_check', array( $this, 'strong_password_check' ) );
+		add_filter( 'gform_userregistration_feed_settings_fields', [ $this, 'gform_registration_email_field' ] );
+
 	}
 
 	/**
@@ -442,6 +464,14 @@ class Setup {
 		exit();
 	}
 
+	public function gform_registration_email_field( $fields ) {
+
+		unset( $fields['user_settings']['fields'][5]['args']['input_types'] );
+		$fields['user_settings']['fields'][5]['args']['callback'] = [ gf_user_registration(), 'is_applicable_field_for_field_select' ];
+
+		return $fields;
+	}
+
 	/**
 	 * Redirect logged in users to their profile
 	 */
@@ -451,6 +481,10 @@ class Setup {
 		}
 
 		if ( current_user_can( 'edit_pages' ) || ! is_user_logged_in() ) {
+			return;
+		}
+
+		if ( ! apply_filters( 'sc_redirect_to_user_domain', true ) ) {
 			return;
 		}
 
