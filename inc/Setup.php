@@ -123,7 +123,7 @@ class Setup {
 		/**
 		 * Initialize Organization customizations
 		 */
-		$this->organization = Organization::get_instance();
+		$this->organization = OrganizationSetup::get_instance();
 
 		/**
 		 * Initialize Library / EDD customizations

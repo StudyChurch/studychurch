@@ -2,34 +2,31 @@
 
 namespace StudyChurch;
 
-class Organization {
+use BP_Groups_Group;
+
+class Organization extends BP_Groups_Group {
+
+	public const MEMBER_LIMIT_KEY = '_sc_member_limit';
 
 	/**
-	 * @var
-	 */
-	protected static $_instance;
-
-	/**
-	 * Only make one instance of the Organization
+	 * Return the member limit for this group
 	 *
-	 * @return Organization
+	 * @return int
+	 * @author Tanner Moushey
 	 */
-	public static function get_instance() {
-		if ( ! self::$_instance instanceof Organization ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
+	public function get_member_limit() {
+		return absint( groups_get_groupmeta( $this->id, self::MEMBER_LIMIT_KEY, true ) );
 	}
 
 	/**
-	 * Add Hooks and Actions
+	 * Update the member limit for this group
+	 *
+	 * @param $limit
+	 *
+	 * @return bool|int
+	 * @author Tanner Moushey
 	 */
-	protected function __construct() {
-		add_action( 'bp_init', [ $this, 'organization_group_type' ] );
-	}
-
-	public function organization_group_type() {
-		bp_groups_register_group_type( 'organization' );
+	public function update_member_limit( $limit ) {
+		return groups_update_groupmeta( $this->id, self::MEMBER_LIMIT_KEY, absint( $limit ) );
 	}
 }

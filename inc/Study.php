@@ -318,7 +318,13 @@ class Study {
 			$group_id = bp_get_current_group_id();
 		}
 
-		return (array) groups_get_groupmeta( $group_id, '_sc_study', true );
+		$studies = groups_get_groupmeta( $group_id, '_sc_study', true );
+
+		if ( empty( $studies ) ) {
+			$studies = [];
+		}
+
+		return $studies;
 	}
 
 	/**

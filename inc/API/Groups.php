@@ -5,6 +5,7 @@ namespace StudyChurch\API;
 use BP_REST_Groups_Endpoint;
 use WP_Error;
 use BP_Groups_Member;
+use WP_REST_Server;
 
 class Groups extends BP_REST_Groups_Endpoint {
 
@@ -19,6 +20,93 @@ class Groups extends BP_REST_Groups_Endpoint {
 
 		parent::register_routes();
 
+		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/remove/(?P<user_id>[\d]+)', array(
+			array(
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => array( $this, 'remove_member' ),
+				'permission_callback' => array( $this, 'update_item_permissions_check' ),
+			),
+		) );
+
+		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/promote/(?P<user_id>[\d]+)', array(
+			array(
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => array( $this, 'promote_member' ),
+				'permission_callback' => array( $this, 'update_item_permissions_check' ),
+			),
+		) );
+
+		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/demote/(?P<user_id>[\d]+)', array(
+			array(
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => array( $this, 'demote_member' ),
+				'permission_callback' => array( $this, 'update_item_permissions_check' ),
+			),
+		) );
+
+	}
+
+	/**
+	 * Remove the provided user
+	 *
+	 * @param $request
+	 *
+	 * @return \WP_REST_Response | WP_Error
+	 * @author Tanner Moushey
+	 */
+	public function remove_member( $request ) {
+		if ( ! groups_remove_member( $request['user_id'], $request['id'] ) ) {
+			return new WP_Error( 'rest_group_cannot_remove_member',
+				__( 'Could not remove the member.', studychurch()->get_id() ),
+				array(
+					'status' => 500,
+				)
+			);
+		}
+
+		return parent::get_item( $request );
+	}
+
+	/**
+	 * Promote the provided user
+	 *
+	 * @param $request
+	 *
+	 * @return \WP_REST_Response | WP_Error
+	 * @author Tanner Moushey
+	 */
+	public function promote_member( $request ) {
+		if ( ! groups_promote_member( $request['user_id'], $request['id'], 'admin' ) ) {
+			return new WP_Error( 'rest_group_cannot_promote_member',
+				__( 'Could not promote the member.', studychurch()->get_id() ),
+				array(
+					'status' => 500,
+				)
+			);
+		}
+
+		return parent::get_item( $request );
+	}
+
+	/**
+	 * Promote the provided user
+	 *
+	 * @param $request
+	 *
+	 * @return \WP_REST_Response | WP_Error
+	 * @author Tanner Moushey
+	 */
+	public function demote_member( $request ) {
+		if ( ! groups_demote_member( $request['user_id'], $request['id'] ) ) {
+			return new WP_Error( 'rest_group_cannot_demote_member',
+				__( 'Could not demote the member.', studychurch()->get_id() ),
+				array(
+					'status' => 500,
+				)
+			);
+		}
+
+		return parent::get_item( $request );
 	}
 
 	/**
@@ -103,7 +191,7 @@ class Groups extends BP_REST_Groups_Endpoint {
 		$schema['properties']['id']['readonly']                              = false;
 		$schema['properties']['description']['properties']['raw']['context'] = [ 'view', 'edit' ];
 
-		return $schema;
+		return $this->add_additional_fields_schema( $schema );
 	}
 
 	/**
@@ -157,6 +245,15 @@ class Groups extends BP_REST_Groups_Endpoint {
 			],
 		];
 
+		$fields['group_type'] = [
+			'get_callback' => [ $this, 'get_group_type' ],
+			'schema'       => [
+				'context'     => [ 'view', 'edit' ],
+				'description' => __( 'The type for this group', studychurch()->get_id() ),
+				'type'        => 'string',
+			],
+		];
+
 		return $fields;
 	}
 
@@ -186,6 +283,23 @@ class Groups extends BP_REST_Groups_Endpoint {
 	}
 
 	/**
+	 * Get the Group Type, should be either Organization or Group
+	 *
+	 * @param $object
+	 *
+	 * @return array|bool|string
+	 * @author Tanner Moushey
+	 */
+	public function get_group_type( $object ) {
+		if ( ! $type = bp_groups_get_group_type( $object['id'], true ) ) {
+			$type = 'group';
+		}
+
+		return $type;
+	}
+
+
+	/**
 	 * Get the members for this group
 	 *
 	 * @param $object
@@ -199,7 +313,7 @@ class Groups extends BP_REST_Groups_Endpoint {
 	public function get_group_members( $object, $field_name, $request, $object_type ) {
 		return [
 			'members' => BP_Groups_Member::get_group_member_ids( $object['id'] ),
-			'admins'  => BP_Groups_Member::get_group_administrator_ids( $object['id'] ),
+			'admins'  => wp_list_pluck( BP_Groups_Member::get_group_administrator_ids( $object['id'] ), 'user_id' ),
 			'mods'    => BP_Groups_Member::get_group_moderator_ids( $object['id'] )
 		];
 
