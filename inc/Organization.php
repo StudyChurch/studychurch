@@ -6,7 +6,7 @@ use BP_Groups_Group;
 
 class Organization extends BP_Groups_Group {
 
-	public const MEMBER_LIMIT_KEY = '_sc_member_limit';
+	const MEMBER_LIMIT_KEY = '_sc_member_limit';
 
 	/**
 	 * Return the member limit for this group
