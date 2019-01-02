@@ -61,10 +61,7 @@ class Users extends BP_REST_Members_Endpoint {
 		}
 
 		$user = get_userdata( $object['id'] );
-
-		rcpga_group_accounts()->members->get_group_id( $user->ID );
-		rcpga_group_accounts()->members->get_group_name( $user->ID );
-
+		
 		return $object;
 	}
 
