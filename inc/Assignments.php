@@ -51,7 +51,7 @@ class Assignments {
 			'show_in_rest' => true,
 		    'rest_controller_class' => 'StudyChurch\API\Assignments'
 		) );
-		register_taxonomy( 'sc_group', 'sc_assignment', array(
+		register_taxonomy( 'sc_group', ['sc_assignment', 'sc_study'], array(
 			'public' => false,
 		) );
 	}

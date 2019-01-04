@@ -150,7 +150,7 @@ class Groups extends BP_REST_Groups_Endpoint {
 			);
 		}
 
-		if ( ! empty( $request['studies'] ) ) {
+		if ( isset( $request['studies'] ) ) {
 			groups_update_groupmeta( $group_id, '_sc_study', array_unique( array_map( 'absint', $request['studies'] ) ) );
 		}
 

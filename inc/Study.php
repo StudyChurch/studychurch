@@ -324,6 +324,10 @@ class Study {
 			$studies = [];
 		}
 
+		if ( ! is_array( $studies ) ) {
+			$studies = [ $studies ];
+		}
+
 		return $studies;
 	}
 
