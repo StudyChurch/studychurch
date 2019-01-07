@@ -33,10 +33,6 @@ class Studies extends WP_REST_Posts_Controller {
 			'get_callback'    => array( $this, 'get_is_private' )
 		) );
 
-//		register_rest_field( 'sc_study', 'navigation', array(
-//			'get_callback' => array( $this, 'get_navigation' )
-//		) );
-
 		$posts_args = array(
 			'context'  => array(
 				'default' => 'view',

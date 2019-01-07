@@ -270,13 +270,7 @@ class Groups extends BP_REST_Groups_Endpoint {
 		$gstudies = [];
 
 		foreach ( $studies as $study ) {
-			$gstudies[] = [
-				'id'          => $study,
-				'link'        => get_permalink( $study ),
-				'title'       => get_the_title( $study ),
-				'description' => apply_filters( 'the_excerpt', get_post( $study )->post_excerpt ),
-				'thumbnail'   => get_the_post_thumbnail_url( $study, 'medium' ),
-			];
+			$gstudies[] = studychurch()->study::get_data( $study );
 		}
 
 		return $gstudies;

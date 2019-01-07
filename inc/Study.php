@@ -332,6 +332,46 @@ class Study {
 	}
 
 	/**
+	 * @param null $user_id
+	 *
+	 * @return array
+	 * @author Tanner Moushey
+	 */
+	public static function get_user_studies( $user_id = null ) {
+		if ( ! $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		$studies = get_user_meta( $user_id, '_sc_study', true );
+
+		if ( empty( $studies ) ) {
+			$studies = [];
+		}
+
+		if ( ! is_array( $studies ) ) {
+			$studies = [ $studies ];
+		}
+
+		return $studies;
+	}
+
+	/**
+	 * @param null $user_id
+	 *
+	 * @return array
+	 * @author Tanner Moushey
+	 */
+	public static function update_user_studies( $user_id = null, $studies = [] ) {
+		if ( ! $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		return update_user_meta( $user_id, '_sc_study', $studies );
+	}
+
+	/** Study Helper Functions */
+
+	/**
 	 * Customize Study link to include group parameter for study answers
 	 *
 	 * @param      $study_id
@@ -426,6 +466,16 @@ class Study {
 		}
 
 		return false;
+	}
+
+	public static function get_data( $study ) {
+		return [
+			'id'          => $study,
+			'link'        => get_permalink( $study ),
+			'title'       => get_the_title( $study ),
+			'description' => apply_filters( 'the_excerpt', get_post( $study )->post_excerpt ),
+			'thumbnail'   => get_the_post_thumbnail_url( $study, 'medium' ),
+		];
 	}
 
 }
