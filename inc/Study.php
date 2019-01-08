@@ -469,13 +469,28 @@ class Study {
 	}
 
 	public static function get_data( $study ) {
-		return [
-			'id'          => $study,
-			'link'        => get_permalink( $study ),
-			'title'       => get_the_title( $study ),
-			'description' => apply_filters( 'the_excerpt', get_post( $study )->post_excerpt ),
-			'thumbnail'   => get_the_post_thumbnail_url( $study, 'medium' ),
+
+		global $post;
+
+		$orig_post = $post;
+		$post = get_post( $study );
+
+		setup_postdata( $post );
+
+		$data = [
+			'id'          => $post->ID,
+			'link'        => get_permalink( $post ),
+			'title'       => get_the_title( $post ),
+			'description' => apply_filters( 'the_excerpt', apply_filters( 'get_the_excerpt', $post->post_excerpt, $study ) ),
+			'thumbnail'   => get_the_post_thumbnail_url( $post, 'medium' ),
+			'author'      => absint(  $post->post_author ),
 		];
+
+		wp_reset_postdata();
+
+		$post = $orig_post;
+
+		return $data;
 	}
 
 }
