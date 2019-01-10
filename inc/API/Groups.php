@@ -129,6 +129,34 @@ class Groups extends BP_REST_Groups_Endpoint {
 	}
 
 	/**
+	 * Get group object.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param  \WP_REST_Request $request Full details about the request.
+	 * @return bool|\BP_Groups_Group
+	 */
+	public function get_group_object( $request ) {
+		$group_id = is_numeric( $request ) ? $request : (int) $request['id'];
+
+		if ( $group_id_from_slug = groups_get_id( $group_id ) ) {
+			$group_id = $group_id_from_slug;
+		}
+
+		$group = groups_get_group( array(
+			'group_id'        => $group_id,
+			'load_users'      => false,
+			'populate_extras' => false,
+		) );
+
+		if ( empty( $group ) || empty( $group->id ) ) {
+			return false;
+		}
+
+		return $group;
+	}
+
+	/**
 	 * Update a group.
 	 *
 	 * @since 0.1.0

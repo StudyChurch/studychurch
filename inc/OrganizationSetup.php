@@ -31,6 +31,8 @@ class OrganizationSetup {
 		add_action( 'bp_groups_admin_meta_boxes', [ $this, 'organization_meta_boxes' ] );
 		add_action( 'bp_group_admin_edit_after', [ $this, 'organization_meta_save' ] );
 		add_action( 'bp_init', [ $this, 'organization_group_type' ] );
+		add_filter( 'bp_get_group_permalink', [ $this, 'org_permalink' ], 10, 2 );
+		add_action( 'groups_join_group', [ $this, 'join_org' ], 10, 2 );
 	}
 
 	/**
@@ -90,6 +92,41 @@ class OrganizationSetup {
 			</fieldset>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Custom permalink for organization
+	 *
+	 * @param $link
+	 * @param $group
+	 *
+	 * @return string
+	 * @author Tanner Moushey
+	 */
+	public function org_permalink( $link, $group ) {
+		if ( 'organization' != bp_groups_get_group_type( $group->id ) ) {
+			return $link;
+		}
+
+		return trailingslashit( bp_get_root_domain() . '/organizations/' . bp_get_group_slug( $group ) );
+	}
+
+	/**
+	 * Make sure that users are automatically added to organization groups.
+	 *
+	 * @param $group_id
+	 * @param $user_id
+	 *
+	 * @author Tanner Moushey
+	 */
+	public function join_org( $group_id, $user_id ) {
+		$group = groups_get_group( $group_id );
+
+		if ( ! $group->parent_id ) {
+			return;
+		}
+
+		groups_join_group( $group->parent_id, $user_id );
 	}
 
 }

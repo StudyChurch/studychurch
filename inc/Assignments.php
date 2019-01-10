@@ -53,6 +53,10 @@ class Assignments {
 		) );
 		register_taxonomy( 'sc_group', ['sc_assignment', 'sc_study'], array(
 			'public' => false,
+		    'show_ui' => true,
+		    'show_in_rest' => true,
+		    'label' => 'Groups',
+		    'meta_box_cb' => 'post_categories_meta_box'
 		) );
 	}
 

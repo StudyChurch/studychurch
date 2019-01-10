@@ -427,6 +427,16 @@ class Study {
 	}
 
 	/**
+	 * Get default thumbnail for studies
+	 *
+	 * @return mixed|string
+	 * @author Tanner Moushey
+	 */
+	public function default_thumbnail() {
+		return Settings::get( 'study_image' );
+	}
+
+	/**
 	 * Can the user access this study?
 	 *
 	 * @param null $study_id
@@ -482,7 +492,7 @@ class Study {
 			'link'        => get_permalink( $post ),
 			'title'       => get_the_title( $post ),
 			'description' => apply_filters( 'the_excerpt', apply_filters( 'get_the_excerpt', $post->post_excerpt, $study ) ),
-			'thumbnail'   => get_the_post_thumbnail_url( $post, 'medium' ),
+			'thumbnail'   => has_post_thumbnail( $post ) ? get_the_post_thumbnail_url( $post, 'medium' ) : studychurch()->study->default_thumbnail(),
 			'author'      => absint(  $post->post_author ),
 		];
 

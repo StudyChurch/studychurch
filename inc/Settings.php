@@ -54,6 +54,30 @@ class Settings {
 		) );
 
 		$cmb->add_field( array(
+			'name' => __( 'Study Settings', 'studychurch' ),
+			'id'   => 'study_title',
+			'type' => 'title',
+		) );
+
+		$cmb->add_field( array(
+			'name'         => 'Default Image',
+			'desc'         => 'The image to use for studies that do not have a thumbnail. Image should be at least 300x225',
+			'id'           => 'study_image',
+			'type'         => 'file',
+			'text'         => array(
+				'add_upload_file_text' => 'Add Image' // Change upload button text. Default: "Add or Upload File"
+			),
+			'query_args' => array(
+				'type' => array(
+					'image/gif',
+					'image/jpeg',
+					'image/png',
+				),
+			),
+			'preview_size' => 'large', // Image size to use when previewing in the admin.
+		) );
+
+		$cmb->add_field( array(
 			'name' => __( 'AWS Settings', 'studychurch' ),
 			'id'   => 'aws_title',
 			'type' => 'title',
