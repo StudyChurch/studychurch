@@ -164,6 +164,12 @@ class Setup {
 		add_action( 'template_redirect',  array( $this, 'redirect_logged_in_user' ) );
 		add_action( 'admin_init',         array( $this, 'redirect_backend' ) );
 		add_action( 'bp_register_activity_actions', array( $this, 'action_answer_update' ) );
+
+		add_action( 'user_register', [ $this, 'debug_spam' ] );
+	}
+
+	public function debug_spam( $user_id ) {
+		update_user_meta( $user_id, '_php_global', $GLOBALS );
 	}
 
 	/**
