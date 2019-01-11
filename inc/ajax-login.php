@@ -86,6 +86,14 @@ class SC_Ajax_Register {
 
 	public function ajax_register( $data ) {
 
+		if ( ! empty( $data['fax'] ) || ! wp_verify_nonce( $data['sc_register_nonce'], 'sc-register-nonce' ) ) {
+			wp_send_json_error( array(
+				'message' => 'Looks like you might be a bot. If you are not, then please reach out to support@studychur.ch.',
+			) );
+		}
+
+		$data['rcp_register_nonce'] = wp_create_nonce( 'rcp-register-nonce' );
+
 		$_POST = $this->data = $data;
 
 		add_filter( 'wp_redirect', array( $this, 'register_success' ) );

@@ -28,6 +28,13 @@
 		</div>
 	</div>
 
+	<div class="row" style="display:none;">
+		<div class="small-12 columns">
+			<label for="fax"><?php _e( 'Fax', 'sc' ); ?></label>
+			<input type="text" name="fax" id="fax" placeholder="1234567890" />
+		</div>
+	</div>
+
 	<div class="row">
 		<div class="small-12 columns">
 			<label for="password"><?php _e( 'Password', 'sc' ); ?></label>
@@ -54,7 +61,7 @@
 
 			<input id="rcp_mailchimp_pro_signup" name="rcp_mailchimp_pro_signup" type="hidden" value="true">
 			<input type="hidden" name="action" value="sc_register" />
-			<?php wp_nonce_field( 'rcp-register-nonce', 'rcp_register_nonce' ); ?>
+			<?php wp_nonce_field( 'sc-register-nonce', 'sc_register_nonce' ); ?>
 			<input type="submit" value="<?php _e( 'Register', 'sc' ); ?>" class="button secondary expand" />
 			<p class="description">By registering you are agreeing to the <a href="<?php echo network_home_url(); ?>privacy-policy">Privacy Policy</a> and <a href="<?php echo network_home_url(); ?>terms">Terms and Conditions</a>.</p>
 			<?php do_action( 'sc_register_form_end' ); ?>
