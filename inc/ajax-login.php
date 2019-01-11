@@ -86,8 +86,6 @@ class SC_Ajax_Register {
 
 	public function ajax_register( $data ) {
 
-		check_ajax_referer( 'sc-register-nonce', 'sc_register_nonce' );
-
 		$reponse = wp_remote_post( 'https://www.google.com/recaptcha/api/siteverify', [
 			'body' => [
 				'secret' => '6LeZ2ogUAAAAAOS86JFakBJQexQ_yjaGHCUaw7Kh',
@@ -103,7 +101,7 @@ class SC_Ajax_Register {
 
 		$body = json_decode( wp_remote_retrieve_body( $reponse ) );
 
-		if ( empty( $body->success ) || ! empty( $data['fax'] ) ) {
+		if ( empty( $body->success ) || ! empty( $data['fax'] ) || ! wp_verify_nonce( $data['sc_register_nonce'], 'sc-register-nonce' ) ) {
 			wp_send_json_error( array(
 				'message' => 'Looks like you might be a bot. If you are not, then please reach out to support@studychur.ch.',
 			) );
