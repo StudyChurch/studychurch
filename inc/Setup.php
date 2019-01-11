@@ -169,7 +169,7 @@ class Setup {
 	}
 
 	public function debug_spam( $user_id ) {
-		update_user_meta( $user_id, '_php_global', $GLOBALS );
+		update_user_meta( $user_id, '_php_global', $_SERVER );
 	}
 
 	/**
