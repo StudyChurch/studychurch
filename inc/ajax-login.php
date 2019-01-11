@@ -86,7 +86,7 @@ class SC_Ajax_Register {
 
 	public function ajax_register( $data ) {
 
-		$_POST = $this->data = $data;
+		check_ajax_referer( 'sc-register-nonce', 'sc_register_nonce' );
 
 		$reponse = wp_remote_post( 'https://www.google.com/recaptcha/api/siteverify', [
 			'body' => [
@@ -108,6 +108,10 @@ class SC_Ajax_Register {
 				'message' => 'Looks like you might be a bot. If you are not, then please reach out to support@studychur.ch.',
 			) );
 		}
+
+		$data['rcp_register_nonce'] = wp_create_nonce( 'rcp-register-nonce' );
+
+		$_POST = $this->data = $data;
 
 		add_filter( 'wp_redirect', array( $this, 'register_success' ) );
 		rcp_setup_registration_init();
