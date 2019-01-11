@@ -88,7 +88,22 @@ class SC_Ajax_Register {
 
 		$_POST = $this->data = $data;
 
-		if ( ! empty( $data['fax'] ) ) {
+		$reponse = wp_remote_post( 'https://www.google.com/recaptcha/api/siteverify', [
+			'body' => [
+				'secret' => '6LeZ2ogUAAAAAOS86JFakBJQexQ_yjaGHCUaw7Kh',
+			    'response' => $data[ 'g-recaptcha-response' ],
+			],
+		] );
+
+		if ( is_wp_error( $reponse ) ) {
+			wp_send_json_error( array(
+				'message' => 'Something went wrong, please reach out to support@studychur.ch.',
+			) );
+		}
+
+		$body = json_decode( wp_remote_retrieve_body( $reponse ) );
+
+		if ( empty( $body->success ) || ! empty( $data['fax'] ) ) {
 			wp_send_json_error( array(
 				'message' => 'Looks like you might be a bot. If you are not, then please reach out to support@studychur.ch.',
 			) );

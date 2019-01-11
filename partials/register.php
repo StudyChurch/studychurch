@@ -49,7 +49,13 @@
 		</div>
 	</div>
 
-	<div class="g-recaptcha" data-sitekey="6LeZ2ogUAAAAAM4eN0IaOcIGlmQx4K0gPLa0gvn-"></div>
+	<div class="row">
+		<div class="small-12 columns">
+			<div class="g-recaptcha" data-sitekey="6LeZ2ogUAAAAAM4eN0IaOcIGlmQx4K0gPLa0gvn-"></div>
+			<br />
+		</div>
+	</div>
+
 
 	<div class="text-center row">
 		<div class="small-12 column">
