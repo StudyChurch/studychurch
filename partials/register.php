@@ -49,6 +49,8 @@
 		</div>
 	</div>
 
+	<div class="g-recaptcha" data-sitekey="6LeZ2ogUAAAAAM4eN0IaOcIGlmQx4K0gPLa0gvn-"></div>
+
 	<div class="text-center row">
 		<div class="small-12 column">
 			<?php
