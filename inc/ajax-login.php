@@ -88,6 +88,12 @@ class SC_Ajax_Register {
 
 		$_POST = $this->data = $data;
 
+		if ( ! empty( $data['fax'] ) ) {
+			wp_send_json_error( array(
+				'message' => 'Looks like you might be a bot. If you are not, then please reach out to support@studychur.ch.',
+			) );
+		}
+
 		add_filter( 'wp_redirect', array( $this, 'register_success' ) );
 		rcp_setup_registration_init();
 		rcp_process_registration();

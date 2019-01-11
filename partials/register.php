@@ -28,6 +28,13 @@
 		</div>
 	</div>
 
+	<div class="row" style="display:none;">
+		<div class="small-12 columns">
+			<label for="fax"><?php _e( 'Fax', 'sc' ); ?></label>
+			<input type="text" name="fax" id="fax" placeholder="1234567890" />
+		</div>
+	</div>
+
 	<div class="row">
 		<div class="small-12 columns">
 			<label for="password"><?php _e( 'Password', 'sc' ); ?></label>
