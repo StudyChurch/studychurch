@@ -44,6 +44,8 @@ class Study {
 
 		// CPT
 		add_action( 'init', array( $this, 'study_cpt' ) );
+		add_action( 'wp_insert_post', [ $this, 'maybe_add_to_org' ], 999 );
+		add_action( 'rest_after_insert_sc_study', [ $this, 'maybe_add_to_org' ], 999 );
 
 		// Groups
 		add_action( 'bp_init', array( $this, 'register_group_extension' ) );
@@ -305,6 +307,21 @@ class Study {
 
 	}
 
+	public function maybe_add_to_org( $post_id ) {
+		$study = get_post( $post_id );
+
+		if ( 'sc_study' !== $study->post_type || $study->post_parent || ! $groups = get_the_terms( $post_id, 'sc_group' ) ) {
+			return;
+		}
+
+		foreach( (array) $groups as $group ) {
+			$studies = self::get_group_studies( $group->slug );
+			$studies[] = $study->ID;
+			self::update_group_studies( $group->slug, $studies );
+		}
+
+	}
+
 	/** Study Helper Functions */
 
 	/**
@@ -329,6 +346,61 @@ class Study {
 		}
 
 		return $studies;
+	}
+
+	/**
+	 * Update Group studies
+	 *
+	 * @param null $group_id
+	 * @param array $studies
+	 *
+	 * @return array
+	 * @author Tanner Moushey
+	 */
+	public static function update_group_studies( $group_id = null, $studies = [] ) {
+		if ( ! $group_id ) {
+			$group_id = bp_get_current_group_id();
+		}
+
+		self::update_group_studies_archive( $group_id, $studies );
+
+		return groups_update_groupmeta( $group_id, '_sc_study', array_unique( array_map( 'absint', $studies ) ) );
+	}
+
+	/**
+	 * Get groups studies archive
+	 *
+	 * @param null $group_id
+	 *
+	 * @return array
+	 * @author Tanner Moushey
+	 */
+	public static function get_group_studies_archive( $group_id = null ) {
+		if ( ! $group_id ) {
+			$group_id = bp_get_current_group_id();
+		}
+
+		$studies = groups_get_groupmeta( $group_id, '_sc_study_archive', true );
+
+		if ( empty( $studies ) ) {
+			$studies = [];
+		}
+
+		return $studies;
+	}
+
+	/**
+	 * Save any new studies to the group archive
+	 *
+	 * @param null $group_id
+	 * @param array $studies
+	 *
+	 * @return array
+	 * @author Tanner Moushey
+	 */
+	public static function update_group_studies_archive( $group_id = null, $studies = [] ) {
+		$archive = array_merge( self::get_group_studies_archive( $group_id ), $studies );
+		return groups_update_groupmeta( $group_id, '_sc_study_all', array_unique( array_map( 'absint', $archive ) ) );
 	}
 
 	/**
@@ -357,6 +429,7 @@ class Study {
 
 	/**
 	 * @param null $user_id
+	 * @param array $studies
 	 *
 	 * @return array
 	 * @author Tanner Moushey
@@ -366,7 +439,40 @@ class Study {
 			$user_id = get_current_user_id();
 		}
 
-		return update_user_meta( $user_id, '_sc_study', $studies );
+		self::update_user_studies_archive( $user_id, $studies );
+		return update_user_meta( $user_id, '_sc_study', array_unique( array_map( 'absint', $studies ) ) );
+	}
+
+	/**
+	 * @param null $user_id
+	 *
+	 * @return array
+	 * @author Tanner Moushey
+	 */
+	public static function get_user_studies_archive( $user_id = null ) {
+		if ( ! $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		$studies = get_user_meta( $user_id, '_sc_study_archive', true );
+
+		if ( empty( $studies ) ) {
+			$studies = [];
+		}
+
+		return $studies;
+	}
+
+	/**
+	 * @param null $user_id
+	 * @param array $studies
+	 *
+	 * @return array
+	 * @author Tanner Moushey
+	 */
+	public static function update_user_studies_archive( $user_id = null, $studies = [] ) {
+		$archive = array_merge( self::get_user_studies_archive( $user_id ), $studies );
+		return update_user_meta( $user_id, '_sc_study_archive', array_unique( array_map( 'absint', $archive ) ) );
 	}
 
 	/** Study Helper Functions */
@@ -487,13 +593,16 @@ class Study {
 
 		setup_postdata( $post );
 
+		$groups = get_the_terms( $post->ID, 'sc_group' );
+
 		$data = [
 			'id'          => $post->ID,
 			'link'        => get_permalink( $post ),
-			'title'       => get_the_title( $post ),
-			'description' => apply_filters( 'the_excerpt', apply_filters( 'get_the_excerpt', $post->post_excerpt, $study ) ),
+			'title'       => [ 'rendered' => get_the_title( $post ) ],
+			'excerpt'     => [ 'rendered' => apply_filters( 'the_excerpt', apply_filters( 'get_the_excerpt', $post->post_excerpt, $study ) ) ],
 			'thumbnail'   => has_post_thumbnail( $post ) ? get_the_post_thumbnail_url( $post, 'medium' ) : studychurch()->study->default_thumbnail(),
 			'author'      => absint(  $post->post_author ),
+			'sc_group'    => $groups ? $groups : [],
 		];
 
 		wp_reset_postdata();

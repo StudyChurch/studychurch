@@ -179,7 +179,7 @@ class Groups extends BP_REST_Groups_Endpoint {
 		}
 
 		if ( isset( $request['studies'] ) ) {
-			groups_update_groupmeta( $group_id, '_sc_study', array_unique( array_map( 'absint', $request['studies'] ) ) );
+			studychurch()->study::update_group_studies( $group_id, $request['studies'] );
 		}
 
 		$group = $this->get_group_object( $group_id );
