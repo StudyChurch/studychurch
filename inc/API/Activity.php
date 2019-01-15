@@ -12,6 +12,8 @@ class Activity extends BP_REST_Activity_Endpoint {
 
 		$this->namespace = studychurch()->get_api_namespace();
 		$this->rest_base = 'activity';
+
+		add_filter( 'rest_activity_show_hidden', [ $this, 'allow_group_0' ], 10, 4 );
 	}
 
 	public function register_routes() {
@@ -162,6 +164,34 @@ class Activity extends BP_REST_Activity_Endpoint {
 
 
 		return $params;
+	}
+
+	public function allow_group_0( $retval, $user_id, $component, $item_id ) {
+		if ( $retval || 'groups' != $component ) {
+			return $retval;
+		}
+
+		// everyone has access to group 0 for personal studies.
+		if ( 0 === $item_id ) {
+			return true;
+		}
+
+		$group = groups_get_group( $item_id );
+
+		if ( ! $group->parent_id ) {
+			return $retval;
+		}
+
+		// @TODO make this more secure
+		add_filter( 'bp_current_user_can', function( $retval, $capability ) {
+			if ( 'bp_moderate' == $capability ) {
+				return true;
+			}
+
+			return $retval;
+		}, 10, 2 );
+
+		return groups_is_user_admin( $user_id, $group->parent_id );
 	}
 
 }

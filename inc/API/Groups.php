@@ -14,6 +14,8 @@ class Groups extends BP_REST_Groups_Endpoint {
 
 		$this->namespace = studychurch()->get_api_namespace();
 		$this->rest_base = 'groups';
+
+		add_filter( 'rest_group_can_see', [ $this, 'can_see_group' ], 10, 2 );
 	}
 
 	public function register_routes() {
@@ -42,6 +44,21 @@ class Groups extends BP_REST_Groups_Endpoint {
 				'callback'            => array( $this, 'demote_member' ),
 				'permission_callback' => array( $this, 'update_item_permissions_check' ),
 			),
+		) );
+
+		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/avatar', array(
+			'args'   => array(
+				'id' => array(
+					'description' => __( 'Unique identifier for the user.' ),
+					'type'        => 'integer',
+				),
+			),
+			array(
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => array( $this, 'update_item_avatar' ),
+				'permission_callback' => array( $this, 'update_item_permissions_check' ),
+			),
+			'schema' => array( $this, 'get_public_item_schema' ),
 		) );
 
 	}
@@ -110,6 +127,64 @@ class Groups extends BP_REST_Groups_Endpoint {
 	}
 
 	/**
+	 * Update the user's avatar
+	 *
+	 * @param \WP_REST_Request $request Full details about the request.
+	 *
+	 * @return true|WP_Error True if the request has access to update the item, WP_Error object otherwise.
+	 */
+	public function update_item_avatar( $request ) {
+		$group = $this->get_group_object( $request );
+		if ( is_wp_error( $group ) ) {
+			return $group;
+		}
+
+		global $bp;
+		$bp->groups->current_group = $group;
+
+		if ( ! isset( $bp->avatar_admin ) ) {
+			$bp->avatar_admin = new \stdClass();
+		}
+
+		$bp->avatar_admin->step = 'upload-image';
+
+		if ( ! empty( $_FILES ) ) {
+			// Pass the file to the avatar upload handler.
+			if ( bp_core_avatar_handle_upload( $_FILES, 'groups_avatar_upload_dir' ) ) {
+				bp_core_avatar_handle_crop( [
+					'object'        => 'group',
+					'avatar_dir'    => 'group-avatars',
+					'item_id'       => $group->id,
+					'original_file' => str_replace( bp_core_avatar_upload_path(), '', $bp->avatar_admin->image->file ),
+					'crop_w'        => bp_core_avatar_original_max_width(),
+					'crop_h'        => bp_core_avatar_original_max_width(),
+					'crop_x'        => 0,
+					'crop_y'        => 0
+				] );
+			}
+		}
+
+		/**
+		 * Fires right before the loading of the group change avatar screen template file.
+		 *
+		 * @since 1.0.0
+		 */
+		do_action( 'group_screen_change_avatar' );
+
+		$group = $this->get_group_object( $group->id );
+
+		$retval = array(
+			$this->prepare_response_for_collection(
+				$this->prepare_item_for_response( $group, $request )
+			),
+		);
+
+		$response = rest_ensure_response( $retval );
+
+		return $response;
+	}
+
+	/**
 	 * Add support for retrieving the group by slug
 	 *
 	 * @param \WP_REST_Request $request
@@ -134,6 +209,7 @@ class Groups extends BP_REST_Groups_Endpoint {
 	 * @since 0.1.0
 	 *
 	 * @param  \WP_REST_Request $request Full details about the request.
+	 *
 	 * @return bool|\BP_Groups_Group
 	 */
 	public function get_group_object( $request ) {
@@ -162,6 +238,7 @@ class Groups extends BP_REST_Groups_Endpoint {
 	 * @since 0.1.0
 	 *
 	 * @param \WP_REST_Request $request Full details about the request.
+	 *
 	 * @return \WP_REST_Response|WP_Error
 	 */
 	public function update_item( $request ) {
@@ -383,4 +460,29 @@ class Groups extends BP_REST_Groups_Endpoint {
 		return sprintf( "%s?group=%s&key=%s", trailingslashit( home_url( 'join' ) ), $object['slug'], sc_get_group_invite_key( $object['id'] ) );
 	}
 
+	public function can_user_delete_or_update( $group ) {
+		if ( $retval = parent::can_user_delete_or_update( $group ) ) {
+			return $retval;
+		}
+
+		if ( ! $group->parent_id ) {
+			return $retval;
+		}
+
+		return groups_is_user_admin( bp_loggedin_user_id(), $group->parent_id );
+	}
+
+	public function can_see_group( $retval, $request ) {
+		if ( $retval ) {
+			return $retval;
+		}
+
+		$group = $this->get_group_object( $request );
+
+		if ( ! $group->parent_id ) {
+			return $retval;
+		}
+
+		return groups_is_user_admin( bp_loggedin_user_id(), $group->parent_id );
+	}
 }
