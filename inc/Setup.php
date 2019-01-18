@@ -503,7 +503,7 @@ class Setup {
 
 		$signature = base64_encode( hash_hmac( 'sha1', $policy, $secret, true ) );
 
-		$key = ( $this->is_dev() ) ? 'ntB-13C-11nroeB-22B-16syB1wqc==' : 'gsuwgH-7fnrzE5ic==';
+		$key = ( $this->is_dev() ) ? 'ntB-13C-11nroeB-22B-16syB1wqc==' : 'AaqrA5wqscqA26icyE-13mg==';
 		$key = apply_filters( 'sc_froala_key', $key ); ?>
 
 		<script>
