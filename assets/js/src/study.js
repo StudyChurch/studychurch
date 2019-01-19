@@ -45,7 +45,7 @@ jQuery(document).ready(function($){
 		};
 
 		SELF.triggerSubmission = function(e) {
-			e.preventDefault;
+			e.preventDefault();
 
 			SELF.$form.submit();
 			SELF.$save.text('Saving');

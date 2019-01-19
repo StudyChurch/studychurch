@@ -14,7 +14,7 @@
   },
   "autoload": {
     "psr-4": {
-      "StudyChurch\\": "inc/"
+      "StudyChurch_Theme\\": "inc/"
     }
   }
 }
