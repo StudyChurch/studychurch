@@ -59,13 +59,6 @@ class StudyChurch_Theme {
 		 * Include custom Foundation functionality
 		 */
 		require get_template_directory() . '/inc/classes.php';
-
-		/**
-		 * Handle login and registration requests
-		 */
-		require get_template_directory() . '/inc/ajax-login.php';
-		require get_template_directory() . '/inc/ajax-forms.php';
-
 	}
 
 	protected function sc_includes() {
